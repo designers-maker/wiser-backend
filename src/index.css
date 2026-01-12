@@ -1,0 +1,51 @@
+/* already there */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { 
+  @apply bg-white text-gray-800;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container { 
+  @apply max-w-6xl mx-auto;
+  padding-left: 1.5rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 2.5rem;
+    padding-right: 2rem;
+  }
+}
+
+/* partner logo scroll animation */
+@keyframes scroll-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll-x {
+  animation: scroll-x 25s linear infinite;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid #991b1b;
+  outline-offset: 2px;
+}

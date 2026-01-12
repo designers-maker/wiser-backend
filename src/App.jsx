@@ -1,0 +1,82 @@
+import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import About from './pages/About';
+import MissionVisionValues from './pages/MissionVisionValues';
+import History from './pages/History';
+import Impact from './pages/Impact';
+import TeamProfile from './pages/TeamProfile';
+import Testimonials from './pages/Testimonials';
+import UpcomingEvents from './pages/UpcomingEvents';
+import Programs from './pages/Programs';
+import Gallery from './pages/Gallery';
+import Contact from './pages/Contact';
+import Donate from './pages/Donate';
+import Volunteer from './pages/Volunteer';
+import VolunteerForm from './pages/VolunteerForm';
+import CSRForm from './pages/CSRForm';
+import CollegeForm from './pages/CollegeForm';
+import Projects from './pages/Projects';
+import ProjectGallery from './pages/ProjectGallery';
+import ProjectDetails from './pages/ProjectDetails';
+import Partner from './pages/Partner';
+import ProgramTeach from './pages/ProgramTeach';
+import ProgramSchoolVolunteering from './pages/ProgramSchoolVolunteering';
+import ProgramCSRVolunteering from './pages/ProgramCSRVolunteering';
+
+export default function App() {
+  const location = useLocation();
+  const [headerHeight, setHeaderHeight] = React.useState(0);
+  const isHome = location.pathname === '/';
+
+  React.useEffect(() => {
+    // Ensure we start at top of page on each navigation
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {}
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    const hdr = document.querySelector('header');
+    function updateHeaderHeight() {
+      if (hdr) setHeaderHeight(hdr.offsetHeight);
+    }
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, []);
+  return (
+    <>
+      <Navbar />
+      <div style={{ height: isHome ? 0 : headerHeight }} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/about/mission" element={<MissionVisionValues />} />
+        <Route path="/about/history" element={<History />} />
+        <Route path="/about/impact" element={<Impact />} />
+        <Route path="/about/team" element={<TeamProfile />} />
+        <Route path="/about/testimonials" element={<Testimonials />} />
+        <Route path="/about/events" element={<UpcomingEvents />} />
+        <Route path="/programs" element={<Programs />} />
+        <Route path="/programs/teach" element={<ProgramTeach />} />
+        <Route path="/programs/school-volunteering" element={<ProgramSchoolVolunteering />} />
+        <Route path="/programs/csr-volunteering" element={<ProgramCSRVolunteering />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/donate" element={<Donate />} />
+        <Route path="/volunteer" element={<Volunteer />} />
+        <Route path="/volunteer/form" element={<VolunteerForm />} />
+        <Route path="/volunteer/csr" element={<CSRForm />} />
+        <Route path="/volunteer/college" element={<CollegeForm />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/gallery/:projectId" element={<ProjectGallery />} />
+        <Route path="/projects/details/:projectId" element={<ProjectDetails />} />
+        <Route path="/partner" element={<Partner />} />
+      </Routes>
+      <Footer />
+    </>
+  );
+}
