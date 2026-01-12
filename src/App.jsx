@@ -25,6 +25,7 @@ import Partner from './pages/Partner';
 import ProgramTeach from './pages/ProgramTeach';
 import ProgramSchoolVolunteering from './pages/ProgramSchoolVolunteering';
 import ProgramCSRVolunteering from './pages/ProgramCSRVolunteering';
+import LearnMore from './pages/LearnMore';
 
 export default function App() {
   const location = useLocation();
@@ -75,6 +76,7 @@ export default function App() {
         <Route path="/projects/gallery/:projectId" element={<ProjectGallery />} />
         <Route path="/projects/details/:projectId" element={<ProjectDetails />} />
         <Route path="/partner" element={<Partner />} />
+        <Route path="/learn-more" element={<LearnMore />} />
       </Routes>
       <Footer />
     </>

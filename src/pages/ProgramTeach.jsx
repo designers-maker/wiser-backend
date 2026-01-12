@@ -14,6 +14,7 @@ export default function ProgramTeach() {
   const [mediaPoster, setMediaPoster] = React.useState('');
   const mediaVideoRef = React.useRef(null);
 
+  // Handle Escape key to close modal
   React.useEffect(() => {
     function onKey(e) {
       if (e.key === 'Escape') {
@@ -24,16 +25,11 @@ export default function ProgramTeach() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // ✅ FIXED: Proper single modal handling
   function openMediaModal(type, src, alt = '', poster = '') {
-    // Reset all states first to prevent overlap
-    setMediaType('image');
-    setMediaSrc('');
-    setMediaAlt('');
-    setMediaPoster('');
-    setMediaModalOpen(false);
+    // Close existing first to ensure clean state
+    closeMediaModal();
     
-    // Set new media after reset
+    // Small delay to allow close to process
     setTimeout(() => {
       setMediaType(type);
       setMediaSrc(src);
@@ -41,14 +37,15 @@ export default function ProgramTeach() {
       setMediaPoster(poster);
       setMediaModalOpen(true);
       
-      // Handle video pausing and body scroll
       setTimeout(() => {
-        document.querySelectorAll('video').forEach((v) => {
-          if (mediaVideoRef.current && v === mediaVideoRef.current) return;
-          try { v.pause(); } catch (e) {}
-        });
-        try { document.body.style.overflow = 'hidden'; } catch (e) {}
-      }, 0);
+        try {
+          document.querySelectorAll('video').forEach((v) => {
+            if (mediaVideoRef.current && v === mediaVideoRef.current) return;
+            try { v.pause(); } catch (e) {}
+          });
+          try { document.body.style.overflow = 'hidden'; } catch (e) {}
+        } catch (e) {}
+      }, 50);
     }, 50);
   }
 
@@ -64,45 +61,59 @@ export default function ProgramTeach() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Hero Section */}
-      <section className="relative h-[40vh] sm:h-[50vh] md:h-[60vh] flex items-center justify-center text-white overflow-hidden">
+    <main className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
+      
+            {/* Hero Section */}
+            <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-gradient-to-r from-red-600 via-orange-600 to-yellow-500"
-          style={{
-            backgroundImage: "url('/images/1.jpg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          className="absolute inset-0 bg-cover bg-center transform scale-105"
+          style={{ backgroundImage: "url('/images/1.jpg')" }}
         />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 text-center space-y-6 px-4 max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
-            Teach Program
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+        
+        {/* Main Content Container */}
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
+          
+          {/* ✅ Education For Everyone Pill */}
+          <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-semibold tracking-wide uppercase animate-pulse">
+            Education For Everyone
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight drop-shadow-2xl">
+            Teach <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">Program</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
+          <p className="text-lg sm:text-2xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
             Empower underprivileged children through quality education and mentorship
           </p>
         </div>
       </section>
 
-      {/* ✅ FIXED Media Modal - SINGLE INSTANCE */}
+      {/* Media Modal - Fixed z-index and Back Button */}
       {mediaModalOpen && (
-        <div className="fixed inset-0 z-60 bg-black/90 flex items-center justify-center p-4" onClick={closeMediaModal}>
-          <div 
-            className="relative w-full max-w-4xl mx-auto max-h-[90vh] overflow-auto" 
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={closeMediaModal}>
+          <div className="relative w-full max-w-6xl mx-auto" onClick={(e) => e.stopPropagation()}>
+            
+            {/* Back Button (Top Left) */}
             <button
-              className="absolute -top-12 right-0 text-white text-3xl z-10 hover:text-gray-300 transition-colors"
               onClick={closeMediaModal}
-              aria-label="Close media"
+              className="absolute -top-16 left-0 text-white font-bold flex items-center gap-2 text-lg hover:text-gray-300 transition-colors z-10"
             >
-              ×
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              Back
             </button>
-            <div className="bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl border border-white/20">
+
+            {/* Close Button (Top Right) */}
+            <button
+              onClick={closeMediaModal}
+              className="absolute -top-16 right-0 text-white hover:text-gray-300 transition-transform hover:rotate-90 duration-300 z-10"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
               {mediaType === 'image' ? (
-                <img src={mediaSrc} alt={mediaAlt} className="w-full h-[70vh] object-contain bg-black p-4" />
+                <img src={mediaSrc} alt={mediaAlt} className="w-full h-[75vh] object-contain" />
               ) : (
                 <video
                   ref={mediaVideoRef}
@@ -110,7 +121,7 @@ export default function ProgramTeach() {
                   poster={mediaPoster}
                   controls
                   autoPlay
-                  className="w-full h-[70vh] object-contain bg-black"
+                  className="w-full h-[75vh] object-contain"
                 />
               )}
             </div>
@@ -118,137 +129,130 @@ export default function ProgramTeach() {
         </div>
       )}
 
-      {/* Main Content */}
-      <section className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16 lg:py-24 space-y-16 lg:space-y-24">
+      {/* Content Wrapper */}
+      <section className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16 space-y-20">
         
-        {/* Overview */}
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-gray-900 to-blue-900 bg-clip-text text-transparent">
-            About Teach Program
-          </h2>
-          <div className="max-w-3xl mx-auto">
-            <p className="text-xl text-gray-700 leading-relaxed">
-              The Teach Program bridges the educational gap for underprivileged children. Our experienced volunteers provide structured learning support in mathematics, science, and English.
-            </p>
+        {/* About Section */}
+        <div className="text-center max-w-4xl mx-auto space-y-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900">About the Program</h2>
+          <p className="text-xl text-slate-600 leading-relaxed">
+            The Teach Program is designed to bridge the educational gap for underprivileged children.
+            Our experienced volunteers and educators provide structured learning support, focusing on
+            foundational skills in mathematics, science, and English language proficiency.
+          </p>
+        </div>
+
+        {/* Features - Glass Cards */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="group relative bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-2">
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6 text-2xl">📚</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Key Focus Areas</h3>
+              <ul className="space-y-4">
+                {['Basic Mathematics & Numeracy', 'English Language Skills', 'Science Fundamentals', 'Critical Thinking'].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-slate-600">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 text-sm">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="group relative bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-2">
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 text-2xl">✨</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Program Highlights</h3>
+              <ul className="space-y-4">
+                {['One-on-one & group mentoring', 'Personalized learning plans', 'Progress tracking & assessments', 'Interactive teaching methods'].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3 text-slate-600">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 text-sm">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Impact Stats */}
-        <section className="space-y-6 max-w-6xl mx-auto">
-          <div className="px-2 sm:px-4">
-            <h3 className="text-3xl lg:text-4xl font-black text-red-900">Our Impact So Far</h3>
-          </div>
-          <div className="bg-gradient-to-r from-red-100/80 to-pink-100/80 backdrop-blur-xl p-6 lg:p-10 rounded-3xl border border-red-200/50 shadow-2xl text-center">
-            <div className="grid md:grid-cols-3 gap-4 lg:gap-8 xl:gap-12">
-              <div className="group p-6 lg:p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-red-100/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div className="text-4xl lg:text-5xl font-black text-red-600 mb-3 group-hover:scale-110 transition-transform">500+</div>
-                <p className="text-lg font-semibold text-gray-800">Students Supported</p>
-              </div>
-              <div className="group p-6 lg:p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-red-100/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div className="text-4xl lg:text-5xl font-black text-red-600 mb-3 group-hover:scale-110 transition-transform">95%</div>
-                <p className="text-lg font-semibold text-gray-800">Pass Rate Improvement</p>
-              </div>
-              <div className="group p-6 lg:p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-red-100/50 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                <div className="text-4xl lg:text-5xl font-black text-red-600 mb-3 group-hover:scale-110 transition-transform">50+</div>
-                <p className="text-lg font-semibold text-gray-800">Active Volunteers</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Feature Boxes */}
-        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Blue Card - Key Focus Areas */}
-          <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 backdrop-blur-xl p-8 lg:p-12 rounded-3xl border border-blue-200/30 shadow-2xl">
-            <h3 className="text-2xl lg:text-3xl font-black text-blue-900 mb-6 flex items-center gap-3">
-              <span className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center text-2xl">📚</span>
-              Key Focus Areas
-            </h3>
-            <div className="space-y-4 text-lg">
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">➤</span>
-                <span>Basic Mathematics & Numeracy</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">➤</span>
-                <span>English Language Skills</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">➤</span>
-                <span>Science Fundamentals</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">➤</span>
-                <span>Critical Thinking & Problem Solving</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Green Card - Program Highlights */}
-          <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/10 backdrop-blur-xl p-8 lg:p-12 rounded-3xl border border-emerald-200/30 shadow-2xl">
-            <h3 className="text-2xl lg:text-3xl font-black text-emerald-900 mb-6 flex items-center gap-3">
-              <span className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-2xl">✨</span>
-              Program Highlights
-            </h3>
-            <div className="space-y-4 text-lg">
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">✅</span>
-                <span>One-on-one & group mentoring sessions</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">✅</span>
-                <span>Personalized learning plans for each child</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">✅</span>
-                <span>Regular progress tracking & assessments</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white/50 rounded-2xl backdrop-blur-sm hover:bg-white/70 transition-all duration-300">
-                <span className="text-2xl mt-1">✅</span>
-                <span>Interactive & engaging teaching methods</span>
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-red-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+          <div className="relative bg-gradient-to-br from-red-500 to-orange-600 rounded-[1.8rem] p-8 md:p-12 text-white shadow-2xl overflow-hidden">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-10 blur-3xl"></div>
+            <div className="relative z-10">
+              <h3 className="text-3xl md:text-4xl font-bold mb-10 text-center tracking-tight">Our Impact So Far</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <div className="text-5xl font-black mb-2 tracking-tight">500+</div>
+                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Students Supported</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <div className="text-5xl font-black mb-2 tracking-tight">95%</div>
+                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Pass Rate</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <div className="text-5xl font-black mb-2 tracking-tight">50+</div>
+                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Active Volunteers</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Program in Action */}
-        <div className="max-w-6xl mx-auto space-y-8">
-          <h3 className="text-3xl lg:text-4xl font-black text-gray-900 text-center">Program in Action</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 justify-items-center">
-            <div className="group bg-white/70 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2 border border-white/50 w-full max-w-sm">
-              <button className="w-full h-80 block relative overflow-hidden" onClick={() => openMediaModal('image', '/images/1.jpg', 'Teaching Activity 1')}>
-                <img src="/images/1.jpg" alt="Teaching Activity 1" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                  <span className="text-white text-4xl font-bold">👁️</span>
+        <div className="space-y-8">
+          <div className="text-center">
+            <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mt-2">Program in Action</h3>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+              <div className="relative overflow-hidden aspect-video cursor-pointer" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/1.jpg', 'Teaching Activity 1'); }}>
+                <img 
+                  src="/images/1.jpg" 
+                  alt="Teaching Activity" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <div className="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
+                    <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  </div>
                 </div>
-              </button>
+              </div>
               <div className="p-6">
-                <h4 className="text-xl font-bold text-gray-900 mb-2">After-school Learning Camp</h4>
-                <p className="text-sm text-gray-600 flex items-center gap-4">
-                  <span>📅 Jan 2024 — Mar 2024</span>
-                  <span>📍 Mumbai</span>
+                <div className="flex items-center gap-2 text-sm text-red-500 font-bold mb-2">
+                  <span>📅</span> Jan 2024 — Mar 2024
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 group-hover:text-red-600 transition-colors">After-school Learning Camp</h4>
+                <p className="text-slate-500 mt-2 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  Mumbai
                 </p>
               </div>
             </div>
 
-            <div className="group bg-white/70 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2 border border-white/50 w-full max-w-sm">
-              <button className="w-full h-80 block relative overflow-hidden" onClick={() => openMediaModal('video', '/videos/teaching.mp4', 'Teaching Activity 2', '/images/2.jpg')}>
-                <video 
-                  className="w-full h-full object-cover" 
-                  poster="/images/2.jpg"
-                  muted
-                >
-                  <source src="/videos/teaching.mp4" type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                  <span className="text-white text-4xl font-bold">▶️</span>
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+              <div className="relative overflow-hidden aspect-video cursor-pointer" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/2.jpg', 'Teaching Activity 2'); }}>
+                <img 
+                  src="/images/2.jpg" 
+                  alt="Workshop" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <div className="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
+                    <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5,12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  </div>
                 </div>
-              </button>
+              </div>
               <div className="p-6">
-                <h4 className="text-xl font-bold text-gray-900 mb-2">Community Engagement Workshop</h4>
-                <p className="text-sm text-gray-600 flex items-center gap-4">
-                  <span>📅 Apr 2024 — Jun 2024</span>
-                  <span>📍 Pune</span>
+                <div className="flex items-center gap-2 text-sm text-red-500 font-bold mb-2">
+                  <span>📅</span> Apr 2024 — Jun 2024
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 group-hover:text-red-600 transition-colors">Community Engagement Workshop</h4>
+                <p className="text-slate-500 mt-2 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  Pune
                 </p>
               </div>
             </div>
@@ -256,177 +260,197 @@ export default function ProgramTeach() {
         </div>
 
         {/* How to Get Involved */}
-        <div className="max-w-5xl mx-auto bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 backdrop-blur-xl p-8 lg:p-10 rounded-3xl border border-blue-200/30 shadow-2xl text-center space-y-6">
-          <div>
-            <h3 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-blue-900 to-purple-900 bg-clip-text text-transparent mb-4">
-              How to Get Involved
-            </h3>
-            <p className="text-lg lg:text-xl text-gray-800 max-w-2xl mx-auto leading-relaxed">
+        <div className="bg-blue-800 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+            <h3 className="text-3xl font-bold">How to Get Involved</h3>
+            <p className="text-blue-100 text-lg">
               Whether you're a teacher, professional, or student, you can make a difference!
             </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-6">
             <button
-              className="px-12 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black text-lg rounded-3xl hover:from-blue-700 hover:to-blue-800 shadow-2xl hover:shadow-3xl hover:-translate-y-1 transition-all duration-300 hover:scale-[1.02] min-w-[220px]"
               onClick={() => setShowContactForm(true)}
+              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               Send us a message
             </button>
           </div>
         </div>
 
-        {/* Contact Form Modal */}
-        {showContactForm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 lg:p-10 w-full max-w-lg shadow-2xl border border-white/50 max-h-[90vh] overflow-y-auto">
-              <button
-                className="absolute top-6 right-6 text-gray-500 hover:text-gray-700 text-3xl font-bold transition-colors"
-                onClick={() => setShowContactForm(false)}
-              >
-                ×
-              </button>
-              <h4 className="text-2xl lg:text-3xl font-black text-gray-900 mb-8 text-center">Send us a message</h4>
-              <form
-                className="space-y-6"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  console.log({ name: contactName, email: contactEmail, message: contactMessage });
-                  setShowContactForm(false);
-                  setContactName('');
-                  setContactEmail('');
-                  setContactMessage('');
-                }}
-              >
-                <input
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  type="text"
-                  placeholder="Your Name"
-                  className="w-full border-2 border-gray-200 rounded-2xl px-5 py-4 text-lg focus:border-blue-500 focus:outline-none transition-all bg-white/50 backdrop-blur-sm"
-                  required
-                />
-                <input
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  type="email"
-                  placeholder="Your Email"
-                  className="w-full border-2 border-gray-200 rounded-2xl px-5 py-4 text-lg focus:border-blue-500 focus:outline-none transition-all bg-white/50 backdrop-blur-sm"
-                  required
-                />
-                <textarea
-                  value={contactMessage}
-                  onChange={(e) => setContactMessage(e.target.value)}
-                  placeholder="Tell us how you'd like to get involved..."
-                  className="w-full border-2 border-gray-200 rounded-2xl px-5 py-4 text-lg focus:border-blue-500 focus:outline-none transition-all bg-white/50 backdrop-blur-sm resize-vertical min-h-[120px]"
-                  rows={4}
-                  required
-                />
-                <div className="flex justify-end gap-4 pt-4">
-                  <button
-                    type="button"
-                    className="px-8 py-3 border-2 border-gray-300 text-gray-800 font-semibold rounded-2xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
-                    onClick={() => setShowContactForm(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-10 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black rounded-2xl hover:from-blue-700 hover:to-blue-800 shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300"
-                  >
-                    Send Message
-                  </button>
-                </div>
-              </form>
-            </div>
+        {/* ✅ Volunteer Stories - SIDE BY SIDE GRID */}
+        <div className="space-y-8">
+          <div className="text-center">
+            <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mt-2">Volunteer Stories</h3>
           </div>
-        )}
 
-        {/* ✅ FIXED Volunteer Stories - SINGLE MODAL ONLY */}
-        <div className="max-w-6xl mx-auto space-y-8">
-          <h3 className="text-3xl lg:text-4xl font-black text-gray-900 text-center">Volunteer Stories</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 justify-items-center">
+          {/* Changed from space-y-8 to grid for side-by-side alignment */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             
-            {/* Story 1 - Photo ONLY */}
-            <div className="bg-white/70 backdrop-blur-xl p-6 lg:p-8 rounded-3xl shadow-2xl border border-white/50 max-w-md w-full group">
-              <div className="relative mb-6">
-                <button 
-                  className="w-full h-48 rounded-2xl overflow-hidden block relative group/media" 
-                  onClick={() => openMediaModal('image', '/images/volunteer1.jpg', 'Anita Sharma teaching children')}
-                  aria-label="View Anita Sharma story"
-                >
-                  <img 
-                    src="/images/volunteer1.jpg" 
-                    alt="Anita Sharma teaching children" 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">👁️</span>
+            {/* Story Card 1 */}
+            <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 overflow-hidden">
+              <div className="flex flex-col md:flex-row gap-4">
+                
+                {/* Left Side: Media Stack */}
+                <div className="w-full md:w-1/2 flex flex-col gap-3">
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/1.jpg', 'Story Image 1'); }}
+                  >
+                    <img src="/images/1.jpg" alt="Story" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                       <span className="bg-white/90 backdrop-blur text-slate-900 font-bold px-3 py-1 rounded-full shadow-lg text-sm transform scale-90 group-hover:scale-100 transition-transform">View Photo</span>
+                    </div>
                   </div>
-                </button>
-              </div>
-              <p className="text-lg italic text-gray-800 mb-6 leading-relaxed">"This program has completely transformed my understanding of mathematics. The mentors are patient and helpful!"</p>
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">A</div>
-                <div>
-                  <p className="font-semibold text-gray-900">Anita Sharma</p>
-                  <p className="text-sm text-gray-600">Student, Class 8</p>
+                  
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'Story Video 1', '/images/g1.jpg'); }}
+                  >
+                    <img src="/images/g1.jpg" alt="Video" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                       <div className="bg-white/20 backdrop-blur-sm border border-white/30 p-2.5 rounded-full group-hover:bg-white/30 transition-colors">
+                         <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                       </div>
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-xs font-semibold">Watch Video</div>
+                  </div>
                 </div>
+
+                {/* Right Side: Text */}
+                <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
+                  <div className="mb-3">
+                    <div className="flex justify-center md:justify-start gap-1 mb-2 text-yellow-400 text-lg">★★★★★</div>
+                    <h5 className="text-xl font-bold text-slate-900 mb-1">Anita Sharma</h5>
+                    <p className="text-sm text-blue-600 font-medium mb-4">Student, Class 8</p>
+                  </div>
+                  
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="text-sm text-slate-700 italic leading-relaxed">
+                      "This program has completely transformed my understanding of mathematics. The mentors are patient and helpful! I feel much more confident in my exams now."
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            {/* Story 2 - Video ONLY */}
-            <div className="bg-white/70 backdrop-blur-xl p-6 lg:p-8 rounded-3xl shadow-2xl border border-white/50 max-w-md w-full group">
-              <div className="relative mb-6">
-                <button 
-                  className="w-full h-48 rounded-2xl overflow-hidden block relative group/media" 
-                  onClick={() => openMediaModal('video', '/videos/volunteer2.mp4', 'Rahul Patel mentoring session', '/images/volunteer2.jpg')}
-                  aria-label="View Rahul Patel story"
-                >
-                  <video 
-                    className="w-full h-full object-cover" 
-                    poster="/images/volunteer2.jpg"
-                    muted
-                    preload="metadata"
+            {/* Story Card 2 */}
+            <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 overflow-hidden">
+              <div className="flex flex-col md:flex-row gap-4">
+                
+                {/* Left Side: Media Stack */}
+                <div className="w-full md:w-1/2 flex flex-col gap-3">
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/2.jpg', 'Story Image 2'); }}
                   >
-                    <source src="/videos/volunteer2.mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold">▶️</span>
+                    <img src="/images/2.jpg" alt="Story" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                       <span className="bg-white/90 backdrop-blur text-slate-900 font-bold px-3 py-1 rounded-full shadow-lg text-sm transform scale-90 group-hover:scale-100 transition-transform">View Photo</span>
+                    </div>
                   </div>
-                </button>
-              </div>
-              <p className="text-lg italic text-gray-800 mb-6 leading-relaxed">"Volunteering here has been incredibly rewarding. Seeing the children's progress motivates us every day."</p>
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0">R</div>
-                <div>
-                  <p className="font-semibold text-gray-900">Rahul Patel</p>
-                  <p className="text-sm text-gray-600">Volunteer Teacher</p>
+                  
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'Story Video 2', '/images/g2.jpg'); }}
+                  >
+                    <img src="/images/g2.jpg" alt="Video" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                       <div className="bg-white/20 backdrop-blur-sm border border-white/30 p-2.5 rounded-full group-hover:bg-white/30 transition-colors">
+                         <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                       </div>
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-xs font-semibold">Watch Video</div>
+                  </div>
                 </div>
+
+                {/* Right Side: Text */}
+                <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
+                  <div className="mb-3">
+                    <div className="flex justify-center md:justify-start gap-1 mb-2 text-yellow-400 text-lg">★★★★★</div>
+                    <h5 className="text-xl font-bold text-slate-900 mb-1">Rahul Patel</h5>
+                    <p className="text-sm text-emerald-600 font-medium mb-4">Volunteer Teacher</p>
+                  </div>
+                  
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="text-sm text-slate-700 italic leading-relaxed">
+                      "Volunteering here has been incredibly rewarding. Seeing the children's progress motivates us every day. It's a privilege to contribute to their future."
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
+
           </div>
         </div>
+
       </section>
 
-      {/* CTA Section */}
-      <section className="w-full bg-gradient-to-r from-red-500 via-orange-500 to-red-600 py-12 lg:py-16 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black drop-shadow-xl">
-            Ready to Make an Impact?
-          </h2>
-          <p className="text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowContactForm(false)} />
+          <div className="relative bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl transform transition-all animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setShowContactForm(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <h3 className="text-2xl font-bold text-slate-900 mb-6">Send us a message</h3>
+            <form
+              className="space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log({ name: contactName, email: contactEmail, message: contactMessage });
+                setShowContactForm(false);
+                setContactName(''); setContactEmail(''); setContactMessage('');
+              }}
+            >
+              <input
+                value={contactName} onChange={(e) => setContactName(e.target.value)}
+                type="text" placeholder="Your Name" required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              <input
+                value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
+                type="email" placeholder="Your Email" required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              <textarea
+                value={contactMessage} onChange={(e) => setContactMessage(e.target.value)}
+                placeholder="Your Message" rows={4} required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all resize-none"
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Call to Action */}
+      <section className="w-full bg-slate-900 py-7 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500 via-slate-900 to-slate-900"></div>
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10 space-y-6">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Ready to Make an Impact?</h2>
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
             Join our Teach Program and help create brighter futures for underprivileged children.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <button 
-              className="px-10 py-4 bg-white text-red-600 font-black text-lg rounded-full hover:bg-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 shadow-xl min-w-[220px] hover:-translate-y-1"
+              className="px-8 py-4 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition-all hover:scale-105 shadow-lg shadow-red-900/20"
               onClick={() => navigate('/volunteer')}
             >
               Volunteer Now
             </button>
             <button 
-              className="px-10 py-4 border-3 border-white text-white font-black text-lg rounded-full hover:bg-white hover:text-red-600 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-[1.02] min-w-[220px] hover:-translate-y-1 backdrop-blur-sm"
+              className="px-8 py-4 bg-white text-slate-900 font-bold rounded-full hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
               onClick={() => navigate('/learn-more')}
             >
               Learn More
@@ -435,20 +459,19 @@ export default function ProgramTeach() {
         </div>
       </section>
 
-      {/* Back Button */}
-      <section className="w-full px-4 sm:px-6 md:px-8 py-12 lg:py-16">
-        <div className="max-w-6xl mx-auto">
+      {/* Back Button - Right Aligned */}
+      <section className="w-full px-4 sm:px-6 md:px-8 py-8 bg-slate-50">
+        <div className="max-w-7xl mx-auto flex justify-end">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-3 px-8 py-4 bg-white/80 backdrop-blur-xl hover:bg-white hover:shadow-2xl rounded-3xl font-bold text-lg text-gray-800 transition-all duration-300 border border-gray-200 hover:-translate-y-1 hover:scale-[1.02] group"
+            className="inline-flex items-center gap-2 px-6 py-2 text-slate-500 hover:text-blue-600 font-semibold transition-colors hover:bg-blue-50 rounded-full text-sm"
           >
-            <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Back to Programs
           </button>
         </div>
       </section>
+
     </main>
   );
 }

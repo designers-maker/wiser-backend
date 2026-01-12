@@ -14,35 +14,39 @@ export default function ProgramSchoolVolunteering() {
   const [mediaPoster, setMediaPoster] = React.useState('');
   const mediaVideoRef = React.useRef(null);
 
+  // Handle Escape key to close modal
   React.useEffect(() => {
     function onKey(e) {
-      if (e.key === 'Escape') closeMediaModal();
+      if (e.key === 'Escape') {
+        closeMediaModal();
+      }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   function openMediaModal(type, src, alt = '', poster = '') {
-    setMediaType(type);
-    setMediaSrc(src);
-    setMediaAlt(alt);
-    setMediaPoster(poster);
-    setMediaModalOpen(true);
-    // defer hiding other media until after modal renders
+    // Close existing first to ensure clean state
+    closeMediaModal();
+    
+    // Small delay to allow close to process
     setTimeout(() => {
-      try {
-        document.querySelectorAll('video').forEach((v) => {
-          if (mediaVideoRef.current && v === mediaVideoRef.current) return;
-          v.dataset.__prevVisibility = v.style.visibility || '';
-          v.style.visibility = 'hidden';
-          try { v.pause(); } catch (e) {}
-        });
-        document.querySelectorAll('.media-thumb').forEach((el) => {
-          el.dataset.__prevVisibility = el.style.visibility || '';
-          el.style.visibility = 'hidden';
-        });
-      } catch (e) {}
-    }, 0);
+      setMediaType(type);
+      setMediaSrc(src);
+      setMediaAlt(alt);
+      setMediaPoster(poster);
+      setMediaModalOpen(true);
+      
+      setTimeout(() => {
+        try {
+          document.querySelectorAll('video').forEach((v) => {
+            if (mediaVideoRef.current && v === mediaVideoRef.current) return;
+            try { v.pause(); } catch (e) {}
+          });
+          try { document.body.style.overflow = 'hidden'; } catch (e) {}
+        } catch (e) {}
+      }, 50);
+    }, 50);
   }
 
   function closeMediaModal() {
@@ -53,51 +57,85 @@ export default function ProgramSchoolVolunteering() {
         mediaVideoRef.current.currentTime = 0;
       }
     } catch (e) {}
-    try {
-      document.querySelectorAll('video').forEach((v) => {
-        if (v.dataset && v.dataset.__prevVisibility !== undefined) {
-          v.style.visibility = v.dataset.__prevVisibility || '';
-          delete v.dataset.__prevVisibility;
-        }
-      });
-      document.querySelectorAll('.media-thumb').forEach((el) => {
-        if (el.dataset && el.dataset.__prevVisibility !== undefined) {
-          el.style.visibility = el.dataset.__prevVisibility || '';
-          delete el.dataset.__prevVisibility;
-        }
-      });
-    } catch (e) {}
+    try { document.body.style.overflow = ''; } catch (e) {}
   }
 
   return (
-    <main className="space-y-8 md:space-y-12">
-      {/* Hero Section with Image */}
-      <section
-        className="relative h-[300px] sm:h-[400px] md:h-[500px] flex items-center justify-center text-white"
-        style={{
-          backgroundImage: "url('/images/2.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 text-center space-y-4 px-4">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
-            School Volunteering Program
+    <main className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
+      
+      {/* Hero Section */}
+      <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center transform scale-105"
+          style={{ backgroundImage: "url('/images/2.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+        
+        {/* Main Content Container */}
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
+          
+          {/* Education For Everyone Pill */}
+          <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-semibold tracking-wide uppercase animate-pulse">
+            Education For Everyone
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight drop-shadow-2xl">
+            School <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">Volunteering</span>
           </h1>
-          <p className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-lg sm:text-2xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
             Supporting students in government and low-income schools through dedicated volunteering
           </p>
         </div>
       </section>
 
-      {/* Content Section */}
-      <section className="w-full px-4 sm:px-6 md:px-8 max-w-6xl mx-auto space-y-8">
+      {/* Media Modal - Fixed z-index and Back Button */}
+      {mediaModalOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={closeMediaModal}>
+          <div className="relative w-full max-w-6xl mx-auto" onClick={(e) => e.stopPropagation()}>
+            
+            {/* Back Button (Top Left) */}
+            <button
+              onClick={closeMediaModal}
+              className="absolute -top-16 left-0 text-white font-bold flex items-center gap-2 text-lg hover:text-gray-300 transition-colors z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              Back
+            </button>
+
+            {/* Close Button (Top Right) */}
+            <button
+              onClick={closeMediaModal}
+              className="absolute -top-16 right-0 text-white hover:text-gray-300 transition-transform hover:rotate-90 duration-300 z-10"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+              {mediaType === 'image' ? (
+                <img src={mediaSrc} alt={mediaAlt} className="w-full h-[75vh] object-contain" />
+              ) : (
+                <video
+                  ref={mediaVideoRef}
+                  src={mediaSrc}
+                  poster={mediaPoster}
+                  controls
+                  autoPlay
+                  className="w-full h-[75vh] object-contain"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Content Wrapper */}
+      <section className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16 space-y-20">
         
-        {/* Overview */}
-        <div className="space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">About School Volunteering Program</h2>
-          <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+        {/* About Section */}
+        <div className="text-center max-w-4xl mx-auto space-y-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-slate-900">About School Volunteering Program</h2>
+          <p className="text-xl text-slate-600 leading-relaxed">
             Our School Volunteering Program brings passionate volunteers directly into schools serving
             underprivileged communities. Volunteers work collaboratively with teachers to provide
             extra support, tutoring, and mentorship to students, creating a nurturing environment
@@ -105,281 +143,365 @@ export default function ProgramSchoolVolunteering() {
           </p>
         </div>
 
-        {/* Key Features - Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg space-y-3">
-            <h3 className="text-xl font-semibold text-blue-900">What Volunteers Do</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">•</span>
-                <span>Assist students with academics in small groups</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">•</span>
-                <span>Conduct activity-based learning sessions</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">•</span>
-                <span>Support skill development programs</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">•</span>
-                <span>Organize sports and extracurricular activities</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">•</span>
-                <span>Mentor students for career guidance</span>
-              </li>
-            </ul>
+        {/* Features - Glass Cards */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="group relative bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-2">
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6 text-2xl">📋</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">What Volunteers Do</h3>
+              <ul className="space-y-4">
+                {['Assist students with academics in small groups', 'Conduct activity-based learning sessions', 'Support skill development programs', 'Organize sports and extracurricular activities', 'Mentor students for career guidance'].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-600">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 text-sm">•</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg space-y-3">
-            <h3 className="text-xl font-semibold text-green-900">Program Benefits</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Flexible volunteer schedules (part-time/full-time)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Comprehensive training provided</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Direct impact on student performance</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Build meaningful relationships with students</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span>Certificate of appreciation upon completion</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* How It Works */}
-        <div className="bg-amber-50 p-6 rounded-lg space-y-4 border-l-4 border-amber-600">
-          <h3 className="text-xl font-semibold text-amber-900">How It Works</h3>
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-amber-600">1</div>
-              <p className="font-semibold text-gray-900">Register</p>
-              <p className="text-sm text-gray-700">Sign up as a volunteer</p>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-amber-600">2</div>
-              <p className="font-semibold text-gray-900">Train</p>
-              <p className="text-sm text-gray-700">Receive orientation & training</p>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-amber-600">3</div>
-              <p className="font-semibold text-gray-900">Contribute</p>
-              <p className="text-sm text-gray-700">Start volunteering at schools</p>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="text-3xl font-bold text-amber-600">4</div>
-              <p className="font-semibold text-gray-900">Impact</p>
-              <p className="text-sm text-gray-700">See students thrive</p>
+          <div className="group relative bg-white rounded-3xl p-8 shadow-xl border border-slate-100 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 hover:-translate-y-2">
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 text-2xl">✨</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">Program Benefits</h3>
+              <ul className="space-y-4">
+                {['Flexible volunteer schedules (part-time/full-time)', 'Comprehensive training provided', 'Direct impact on student performance', 'Build meaningful relationships with students', 'Certificate of appreciation upon completion'].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-slate-600">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 text-sm">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
 
-        {/* Impact Statistics */}
-        <div className="bg-red-50 border-l-4 border-red-600 p-6 rounded space-y-4">
-          <h3 className="text-xl font-semibold text-red-900">Our Impact</h3>
-          <div className="grid md:grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-3xl font-bold text-red-600">2000+</p>
-              <p className="text-gray-700">Students Reached</p>
+        {/* How It Works - Styled Grid */}
+        <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-900">How It Works</h3>
+          </div>
+          <div className="grid md:grid-cols-4 gap-6 text-center">
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 text-2xl font-bold mb-2">1</div>
+              <h4 className="font-bold text-slate-900">Register</h4>
+              <p className="text-sm text-slate-600">Sign up as a volunteer</p>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-red-600">150+</p>
-              <p className="text-gray-700">Active Volunteers</p>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 text-2xl font-bold mb-2">2</div>
+              <h4 className="font-bold text-slate-900">Train</h4>
+              <p className="text-sm text-slate-600">Receive orientation & training</p>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-red-600">40+</p>
-              <p className="text-gray-700">Partner Schools</p>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 text-2xl font-bold mb-2">3</div>
+              <h4 className="font-bold text-slate-900">Contribute</h4>
+              <p className="text-sm text-slate-600">Start volunteering at schools</p>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 text-2xl font-bold mb-2">4</div>
+              <h4 className="font-bold text-slate-900">Impact</h4>
+              <p className="text-sm text-slate-600">See students thrive</p>
             </div>
           </div>
         </div>
 
-        {/* Program in Action - cards with title, duration and location */}
-        <div className="space-y-4">
-          <h3 className="text-2xl font-bold text-gray-900">Program in Action</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg overflow-hidden shadow">
-              <button className="w-full block" onClick={() => openMediaModal('image', '/images/2.jpg', 'School Activity 1')}>
-                <img src="/images/2.jpg" alt="School Activity 1" className="w-full h-64 object-cover" />
-              </button>
-              <div className="p-4">
-                <h4 className="text-lg font-semibold text-gray-900">Classroom Tutoring Drive</h4>
-                <p className="text-sm text-gray-600">Duration: Feb 2024 — Apr 2024</p>
-                <p className="text-sm text-gray-600">Location: Thane</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg overflow-hidden shadow">
-              <button className="w-full block" onClick={() => openMediaModal('image', '/images/3.jpg', 'School Activity 2')}>
-                <img src="/images/3.jpg" alt="School Activity 2" className="w-full h-64 object-cover" />
-              </button>
-              <div className="p-4">
-                <h4 className="text-lg font-semibold text-gray-900">After-school Remedial Sessions</h4>
-                <p className="text-sm text-gray-600">Duration: May 2024 — Jul 2024</p>
-                <p className="text-sm text-gray-600">Location: Nashik</p>
+        {/* Impact Stats - Title Inside Box */}
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-red-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+          <div className="relative bg-gradient-to-br from-red-500 to-orange-600 rounded-[1.8rem] p-8 md:p-12 text-white shadow-2xl overflow-hidden">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-10 blur-3xl"></div>
+            <div className="relative z-10">
+              <h3 className="text-3xl md:text-4xl font-bold mb-10 text-center tracking-tight">Our Impact</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <div className="text-5xl font-black mb-2 tracking-tight">2000+</div>
+                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Students Reached</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <div className="text-5xl font-black mb-2 tracking-tight">150+</div>
+                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Active Volunteers</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
+                  <div className="text-5xl font-black mb-2 tracking-tight">40+</div>
+                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Partner Schools</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* How to Get Involved - same behavior as ProgramTeach */}
-        <div className="bg-blue-50 p-6 rounded-lg space-y-4">
-          <h3 className="text-2xl font-bold text-blue-900">How to Get Involved</h3>
-          <p className="text-gray-700">Whether you're a teacher, professional, or student, you can make a difference!</p>
-          <div>
+        {/* Program in Action */}
+        <div className="space-y-8">
+          <div className="text-center">
+            <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mt-2">Program in Action</h3>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+              <div className="relative overflow-hidden aspect-video cursor-pointer" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/2.jpg', 'School Activity 1'); }}>
+                <img 
+                  src="/images/2.jpg" 
+                  alt="School Activity" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <div className="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
+                    <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-sm text-red-500 font-bold mb-2">
+                  <span>📅</span> Feb 2024 — Apr 2024
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 group-hover:text-red-600 transition-colors">Classroom Tutoring Drive</h4>
+                <p className="text-slate-500 mt-2 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  Thane
+                </p>
+              </div>
+            </div>
+
+            <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+              <div className="relative overflow-hidden aspect-video cursor-pointer" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/3.jpg', 'School Activity 2'); }}>
+                <img 
+                  src="/images/3.jpg" 
+                  alt="Sessions" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <div className="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
+                    <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5,12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-sm text-red-500 font-bold mb-2">
+                  <span>📅</span> May 2024 — Jul 2024
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 group-hover:text-red-600 transition-colors">After-school Remedial Sessions</h4>
+                <p className="text-slate-500 mt-2 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  Nashik
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* How to Get Involved */}
+        <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
+            <h3 className="text-3xl font-bold">How to Get Involved</h3>
+            <p className="text-blue-100 text-lg">
+              Whether you're a teacher, professional, or student, you can make a difference!
+            </p>
             <button
-              className="bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               onClick={() => setShowContactForm(true)}
+              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               Send us a message
             </button>
           </div>
-
-          {showContactForm && (
-            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
-                <button
-                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl"
-                  onClick={() => setShowContactForm(false)}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-                <h4 className="text-lg font-bold mb-4">Send us a message</h4>
-                <form
-                  className="space-y-4"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    console.log({ name: contactName, email: contactEmail, message: contactMessage });
-                    setShowContactForm(false);
-                    setContactName('');
-                    setContactEmail('');
-                    setContactMessage('');
-                  }}
-                >
-                  <input
-                    value={contactName}
-                    onChange={(e) => setContactName(e.target.value)}
-                    type="text"
-                    placeholder="Name"
-                    className="w-full border rounded px-3 py-2"
-                    required
-                  />
-                  <input
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
-                    type="email"
-                    placeholder="Email"
-                    className="w-full border rounded px-3 py-2"
-                    required
-                  />
-                  <textarea
-                    value={contactMessage}
-                    onChange={(e) => setContactMessage(e.target.value)}
-                    placeholder="Message"
-                    className="w-full border rounded px-3 py-2"
-                    rows={4}
-                    required
-                  />
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      className="bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700"
-                    >
-                      Send
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Volunteer Stories - table with videos and images (like ProgramTeach) */}
-        <div className="space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900">Volunteer Stories</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border rounded-lg">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 border-b text-left">Story</th>
-                  <th className="px-4 py-2 border-b text-left">Video</th>
-                  <th className="px-4 py-2 border-b text-left">Image</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="px-4 py-2 border-b align-top">"Volunteering at local schools transformed my perspective on teaching and community."</td>
-                  <td className="px-4 py-2 border-b">
-                    <div className="relative h-32 w-48 rounded overflow-hidden cursor-pointer media-thumb" onClick={() => openMediaModal('video', '/videos/nasscom.mp4', 'School Video 1', '/images/g1.jpg')}>
-                      <img src="/images/g1.jpg" alt="thumb 1" className="h-full w-full object-cover" />
-                      <div className="absolute inset-0 flex items-center justify-center text-white text-3xl pointer-events-none bg-black/20">▶</div>
+        {/* ✅ Volunteer Stories - SIDE BY SIDE GRID */}
+        <div className="space-y-8">
+          <div className="text-center">
+            <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mt-2">Volunteer Stories</h3>
+          </div>
+
+          {/* Grid for Side by Side alignment */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            {/* Story Card 1 */}
+            <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 overflow-hidden">
+              <div className="flex flex-col md:flex-row gap-4">
+                
+                {/* Left Side: Media Stack */}
+                <div className="w-full md:w-1/2 flex flex-col gap-3">
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'School Video 1', '/images/g1.jpg'); }}
+                  >
+                    <img src="/images/g1.jpg" alt="Video" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                       <div className="bg-white/20 backdrop-blur-sm border border-white/30 p-2.5 rounded-full group-hover:bg-white/30 transition-colors">
+                         <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                       </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-2 border-b">
-                    <img src="/images/2.jpg" alt="story image 1" className="h-32 w-48 object-cover rounded cursor-pointer media-thumb" onClick={() => openMediaModal('image', '/images/2.jpg', 'Story Image 1')} />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-2 border-b align-top">"The mentorship opportunities were rewarding and helped students improve significantly."</td>
-                  <td className="px-4 py-2 border-b">
-                    <div className="relative h-32 w-48 rounded overflow-hidden cursor-pointer media-thumb" onClick={() => openMediaModal('video', '/videos/nasscom.mp4', 'School Video 2', '/images/g2.jpg')}>
-                      <img src="/images/g2.jpg" alt="thumb 2" className="h-full w-full object-cover" />
-                      <div className="absolute inset-0 flex items-center justify-center text-white text-3xl pointer-events-none bg-black/20">▶</div>
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-xs font-semibold">Watch Video</div>
+                  </div>
+                  
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/2.jpg', 'Story Image 1'); }}
+                  >
+                    <img src="/images/2.jpg" alt="Story" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                       <span className="bg-white/90 backdrop-blur text-slate-900 font-bold px-3 py-1 rounded-full shadow-lg text-sm transform scale-90 group-hover:scale-100 transition-transform">View Photo</span>
                     </div>
-                  </td>
-                  <td className="px-4 py-2 border-b">
-                    <img src="/images/3.jpg" alt="story image 2" className="h-32 w-48 object-cover rounded cursor-pointer media-thumb" onClick={() => openMediaModal('image', '/images/3.jpg', 'Story Image 2')} />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </div>
+
+                {/* Right Side: Text */}
+                <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
+                  <div className="mb-3">
+                    <div className="flex justify-center md:justify-start gap-1 mb-2 text-yellow-400 text-lg">★★★★★</div>
+                    <h5 className="text-xl font-bold text-slate-900 mb-1">Volunteer</h5>
+                    <p className="text-sm text-blue-600 font-medium mb-4">Community Participant</p>
+                  </div>
+                  
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="text-sm text-slate-700 italic leading-relaxed">
+                      "Volunteering at local schools transformed my perspective on teaching and community."
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Story Card 2 */}
+            <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 overflow-hidden">
+              <div className="flex flex-col md:flex-row gap-4">
+                
+                {/* Left Side: Media Stack */}
+                <div className="w-full md:w-1/2 flex flex-col gap-3">
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'School Video 2', '/images/g2.jpg'); }}
+                  >
+                    <img src="/images/g2.jpg" alt="Video" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                       <div className="bg-white/20 backdrop-blur-sm border border-white/30 p-2.5 rounded-full group-hover:bg-white/30 transition-colors">
+                         <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                       </div>
+                    </div>
+                    <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-xs font-semibold">Watch Video</div>
+                  </div>
+                  
+                  <div 
+                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
+                    onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/3.jpg', 'Story Image 2'); }}
+                  >
+                    <img src="/images/3.jpg" alt="Story" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                       <span className="bg-white/90 backdrop-blur text-slate-900 font-bold px-3 py-1 rounded-full shadow-lg text-sm transform scale-90 group-hover:scale-100 transition-transform">View Photo</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Text */}
+                <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
+                  <div className="mb-3">
+                    <div className="flex justify-center md:justify-start gap-1 mb-2 text-yellow-400 text-lg">★★★★★</div>
+                    <h5 className="text-xl font-bold text-slate-900 mb-1">Volunteer</h5>
+                    <p className="text-sm text-emerald-600 font-medium mb-4">Mentor</p>
+                  </div>
+                  
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p className="text-sm text-slate-700 italic leading-relaxed">
+                      "The mentorship opportunities were rewarding and helped students improve significantly."
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
         </div>
 
       </section>
 
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowContactForm(false)} />
+          <div className="relative bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl transform transition-all animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setShowContactForm(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <h3 className="text-2xl font-bold text-slate-900 mb-6">Send us a message</h3>
+            <form
+              className="space-y-4"
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log({ name: contactName, email: contactEmail, message: contactMessage });
+                setShowContactForm(false);
+                setContactName(''); setContactEmail(''); setContactMessage('');
+              }}
+            >
+              <input
+                value={contactName} onChange={(e) => setContactName(e.target.value)}
+                type="text" placeholder="Your Name" required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              <input
+                value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
+                type="email" placeholder="Your Email" required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              <textarea
+                value={contactMessage} onChange={(e) => setContactMessage(e.target.value)}
+                placeholder="Your Message" rows={4} required
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all resize-none"
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Call to Action */}
-      <section className="w-full bg-gradient-to-r from-red-600 to-red-700 py-12 text-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center space-y-4">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
-            Join Our School Volunteering Program
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-            Your dedication can transform the lives of hundreds of students. Apply today!
+      <section className="w-full bg-slate-900 py-7 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500 via-slate-900 to-slate-900"></div>
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10 space-y-6">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Join Our School Volunteering Program</h2>
+          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+            Your dedication can transform lives of hundreds of students. Apply today!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <button className="px-8 py-3 bg-white text-red-600 font-semibold rounded-full hover:bg-gray-100 transition-colors">
+            <button 
+              className="px-8 py-4 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition-all hover:scale-105 shadow-lg shadow-red-900/20"
+              onClick={() => navigate('/volunteer')}
+            >
               Volunteer Now
             </button>
-            <button className="px-8 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-red-600 transition-colors">
+            <button 
+              className="px-8 py-4 bg-white text-slate-900 font-bold rounded-full hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
+              onClick={() => navigate('/learn-more')}
+            >
               Learn More
             </button>
           </div>
         </div>
       </section>
 
-      {/* Back Button */}
-      <section className="w-full px-4 sm:px-6 md:px-8 pb-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-2"
-        >
-          ← Back to Programs
-        </button>
+      {/* Back Button - Right Aligned */}
+      <section className="w-full px-4 sm:px-6 md:px-8 py-8 bg-slate-50">
+        <div className="max-w-7xl mx-auto flex justify-end">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 px-6 py-2 text-slate-500 hover:text-blue-600 font-semibold transition-colors hover:bg-blue-50 rounded-full text-sm"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Back to Programs
+          </button>
+        </div>
       </section>
+
     </main>
   );
 }

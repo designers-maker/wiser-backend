@@ -27,33 +27,41 @@ export default function CSRForm() {
     setSubmitStatus(null);
 
     try {
-      const serviceID = 'service_hacci57';
-      const templateID = 'template_s2xswyd';
-      const publicKey = '5A8xUcWH2PhQJkt4K';
+     // EmailJS integration
+      // Configure with your EmailJS credentials
+      // Change to_email to your College email ID
+
+      /*
+      import emailjs from '@emailjs/browser';
+
+      const serviceID = 'YOUR_SERVICE_ID';
+      const templateID = 'YOUR_TEMPLATE_ID';
+      const publicKey = 'YOUR_PUBLIC_KEY';
 
       await emailjs.send(
-  serviceID,
-  templateID,
-  {
-    to_email: 'csr@seventhsensetalent.com',   // matches {{to_email}}
+        serviceID,
+        templateID,
+        {
+          to_email: 'college@wiservolunteer.org', // Your College email ID
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          message: formData.message,
+          subject: 'New College Partnership Inquiry'
+        },
+        publicKey
+      );
+      */
 
-    // keys on left MUST match template: {{name}}, {{email}}, etc.
-    name: formData.name,
-    email: formData.email,
-    phone: formData.phone,
-    company: formData.company,
-    message: formData.message,
-    subject: 'New CSR Partnership Inquiry',
-    form_name: 'CSR Partnership Form',
-  },
-  publicKey
-);
-
+      // Simulate email sending
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setSubmitStatus('success');
+      // Redirect to /partner after success
       setTimeout(() => {
-        navigate('/volunteer');
+        navigate('/partner');
       }, 2000);
+
     } catch (error) {
       console.error('Error sending email:', error);
       setSubmitStatus('error');
@@ -64,14 +72,15 @@ export default function CSRForm() {
 
   return (
     <main className="container py-8 sm:py-12 px-4 max-w-2xl mx-auto">
+      {/* UPDATED BUTTON: Back to Partner */}
       <button
-        onClick={() => navigate('/volunteer')}
+        onClick={() => navigate('/partner')}
         className="flex items-center gap-2 text-red-700 hover:text-red-800 font-semibold mb-6 transition-colors"
       >
         <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-        Back to Volunteer
+        Back to Partner
       </button>
 
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-red-800">
@@ -181,4 +190,3 @@ export default function CSRForm() {
     </main>
   );
 }
-

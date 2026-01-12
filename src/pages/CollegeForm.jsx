@@ -57,8 +57,10 @@ export default function CollegeForm() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       setSubmitStatus('success');
+      
+      // CHANGE: This redirects to /partner after success
       setTimeout(() => {
-        navigate('/volunteer');
+        navigate('/partner');
       }, 2000);
     } catch (error) {
       console.error('Error sending email:', error);
@@ -70,14 +72,15 @@ export default function CollegeForm() {
 
   return (
     <main className="container py-8 sm:py-12 px-4 max-w-2xl mx-auto">
+      {/* CHANGE: Button now says Back to Partner and goes to /partner */}
       <button
-        onClick={() => navigate('/volunteer')}
+        onClick={() => navigate('/partner')}
         className="flex items-center gap-2 text-red-700 hover:text-red-800 font-semibold mb-6 transition-colors"
       >
         <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-        Back to Volunteer
+        Back to Partner
       </button>
 
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-red-800">
@@ -187,4 +190,3 @@ export default function CollegeForm() {
     </main>
   );
 }
-
