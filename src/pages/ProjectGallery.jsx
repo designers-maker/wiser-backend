@@ -97,56 +97,18 @@ export default function ProjectGallery() {
   const project = projectData[projectId] || projectData[1];
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-20">
-      
-      {/* Header Section */}
-      <div className="bg-white border-b border-gray-100 pt-16 pb-12 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-orange-500 to-red-600"></div>
-        
-        <div className="container mx-auto px-4 max-w-7xl">
-          <button
-            onClick={() => navigate('/projects')}
-            className="group flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-full border border-gray-200 hover:border-red-200 transition-all duration-300 font-semibold text-sm mb-6 w-fit"
-          >
-            <svg className="w-4 h-4 transition-transform -rotate-180 group-hover:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-            Back to Projects
-          </button>
-
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <div>
-              <span className="text-sm font-bold text-red-500 tracking-widest uppercase mb-2 block">Project Overview</span>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-                {project.title}
-              </h1>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 max-w-7xl py-12 space-y-16">
-        
-        {/* Stats Section - Modern Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {project.numbers.map((stat, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-red-50 text-red-600 rounded-xl group-hover:bg-red-600 group-hover:text-white transition-colors duration-300">
-                  {stat.icon}
-                </div>
-              </div>
-              <div className="mb-1">
-                <h3 className="text-4xl font-extrabold text-gray-900">
-                  <AnimatedCounter end={stat.number} duration={2000} />
-                </h3>
-              </div>
-              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-                {stat.metric}
-              </p>
-            </div>
-          ))}
-        </div>
+    <main className="min-h-screen bg-slate-50 pb-20 pt-12">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/projects')}
+          className="group flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-full border border-gray-200 hover:border-red-200 transition-all duration-300 font-semibold text-sm mb-6 w-fit"
+        >
+          <svg className="w-4 h-4 transition-transform -rotate-180 group-hover:-rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          Back to Projects
+        </button>
 
         {/* Gallery Section */}
         <section>
@@ -182,7 +144,6 @@ export default function ProjectGallery() {
             ))}
           </div>
         </section>
-
       </div>
     </main>
   );

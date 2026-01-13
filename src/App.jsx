@@ -30,13 +30,28 @@ import LearnMore from './pages/LearnMore';
 export default function App() {
   const location = useLocation();
   const [headerHeight, setHeaderHeight] = React.useState(0);
+  const [isNavigating, setIsNavigating] = React.useState(false);
   const isHome = location.pathname === '/';
 
+  const loadingFrames = React.useMemo(
+    () => [
+      '/animation/1.png',
+      '/animation/2.png',
+      '/animation/3.png',
+      '/animation/4.png',
+      '/animation/5.png'
+    ],
+    []
+  );
+
   React.useEffect(() => {
-    // Ensure we start at top of page on each navigation
+    // Show loading overlay briefly on route change and scroll to top
+    setIsNavigating(true);
     try {
       window.scrollTo(0, 0);
     } catch (e) {}
+    const t = setTimeout(() => setIsNavigating(false), 600);
+    return () => clearTimeout(t);
   }, [location.pathname]);
 
   React.useEffect(() => {
@@ -50,6 +65,9 @@ export default function App() {
   }, []);
   return (
     <>
+      {isNavigating && (
+        <RouteLoading frames={loadingFrames} />
+      )}
       <Navbar />
       <div style={{ height: isHome ? 0 : headerHeight }} />
       <Routes>
@@ -80,5 +98,29 @@ export default function App() {
       </Routes>
       <Footer />
     </>
+  );
+}
+
+function RouteLoading({ frames }) {
+  const [frameIndex, setFrameIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const iv = setInterval(() => {
+      setFrameIndex((f) => (f + 1) % frames.length);
+    }, 120);
+    return () => clearInterval(iv);
+  }, [frames]);
+
+  return (
+    <div className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <img
+          src={frames[frameIndex]}
+          alt="Loading"
+          className="w-20 h-20 object-contain drop-shadow-md"
+        />
+        <span className="text-red-600 font-bold">WISER...</span>
+      </div>
+    </div>
   );
 }
