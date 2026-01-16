@@ -94,6 +94,23 @@ class FirebaseDB {
   }
 
   // Specific form collections
+  // Updated collections with proper names
+  individualVolunteering = {
+    create: (data) => this.create('individual_volunteering_submissions', data),
+    findAll: (limit) => this.findAll('individual_volunteering_submissions', limit)
+  };
+
+  corporateVolunteering = {
+    create: (data) => this.create('corporate_volunteering_submissions', data),
+    findAll: (limit) => this.findAll('corporate_volunteering_submissions', limit)
+  };
+
+  requestForVolunteering = {
+    create: (data) => this.create('request_for_volunteering_submissions', data),
+    findAll: (limit) => this.findAll('request_for_volunteering_submissions', limit)
+  };
+
+  // Legacy collections (maintaining for backward compatibility)
   volunteer = {
     create: (data) => this.create('volunteer_submissions', data),
     findAll: (limit) => this.findAll('volunteer_submissions', limit)
@@ -118,6 +135,11 @@ class FirebaseDB {
     create: (data) => this.create('donation_records', data),
     findAll: (limit) => this.findAll('donation_records', limit)
   };
+
+  // Aliases for backward compatibility
+  csr_submissions = this.csr;
+  college_submissions = this.college;
+  volunteer_submissions = this.volunteer;
 }
 
 // Export singleton instance
