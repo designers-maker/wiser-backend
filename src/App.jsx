@@ -15,17 +15,22 @@ import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Donate from './pages/Donate';
 import Volunteer from './pages/Volunteer';
-import VolunteerForm from './pages/VolunteerForm';
-import CSRForm from './pages/CSRForm';
-import CollegeForm from './pages/CollegeForm';
+import IndividualVolunteeringForm from './pages/IndividualVolunteeringForm';
+import CorporateVolunteerForm from './pages/CorporateVolunteerForm';
+import RequestForVolunteeringForm from './pages/RequestForVolunteeringForm';
 import Projects from './pages/Projects';
 import ProjectGallery from './pages/ProjectGallery';
 import ProjectDetails from './pages/ProjectDetails';
+import FoundationPoint from './pages/FoundationPoint';
+import Submissions from './pages/Submissions';
 import Partner from './pages/Partner';
 import ProgramTeach from './pages/ProgramTeach';
 import ProgramSchoolVolunteering from './pages/ProgramSchoolVolunteering';
 import ProgramCSRVolunteering from './pages/ProgramCSRVolunteering';
 import LearnMore from './pages/LearnMore';
+import IndividualVolunteering from './pages/IndividualVolunteering';
+import CorporateVolunteering from './pages/CorporateVolunteering';
+import RequestForVolunteering from './pages/RequestForVolunteering';
 
 export default function App() {
   const location = useLocation();
@@ -57,21 +62,36 @@ export default function App() {
   React.useEffect(() => {
     const hdr = document.querySelector('header');
     function updateHeaderHeight() {
-      if (hdr) setHeaderHeight(hdr.offsetHeight);
+      if (hdr) {
+        setHeaderHeight(hdr.offsetHeight);
+      }
     }
+    
+    // Update immediately
     updateHeaderHeight();
+    
+    // Update on window resize
     window.addEventListener('resize', updateHeaderHeight);
-    return () => window.removeEventListener('resize', updateHeaderHeight);
-  }, []);
+    
+    // Small delay to ensure navbar is fully rendered
+    const timer = setTimeout(updateHeaderHeight, 100);
+    
+    return () => {
+      window.removeEventListener('resize', updateHeaderHeight);
+      clearTimeout(timer);
+    };
+  }, [location.pathname]); // Re-calculate when route changes
   return (
     <>
       {isNavigating && (
         <RouteLoading frames={loadingFrames} />
       )}
       <Navbar />
-      <div style={{ height: isHome ? 0 : headerHeight }} />
+      {/* Add spacing for fixed navbar on all pages except home */}
+      <div className={isHome ? '' : 'pt-14 sm:pt-16 md:pt-[72px]'} />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/foundation/:slug" element={<FoundationPoint />} />
         <Route path="/about" element={<About />} />
         <Route path="/about/mission" element={<MissionVisionValues />} />
         <Route path="/about/history" element={<History />} />
@@ -87,14 +107,18 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donate />} />
         <Route path="/volunteer" element={<Volunteer />} />
-        <Route path="/volunteer/form" element={<VolunteerForm />} />
-        <Route path="/volunteer/csr" element={<CSRForm />} />
-        <Route path="/volunteer/college" element={<CollegeForm />} />
+        <Route path="/volunteer/form" element={<IndividualVolunteeringForm />} />
+        <Route path="/volunteer/csr" element={<CorporateVolunteerForm />} />
+        <Route path="/volunteer/request" element={<RequestForVolunteering />} />
+        <Route path="/volunteer/individual" element={<IndividualVolunteering />} />
+        <Route path="/volunteer/corporate" element={<CorporateVolunteering />} />
+        <Route path="/volunteer/request-info" element={<RequestForVolunteeringForm />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/gallery/:projectId" element={<ProjectGallery />} />
         <Route path="/projects/details/:projectId" element={<ProjectDetails />} />
         <Route path="/partner" element={<Partner />} />
         <Route path="/learn-more" element={<LearnMore />} />
+        <Route path="/admin/submissions" element={<Submissions />} />
       </Routes>
       <Footer />
     </>

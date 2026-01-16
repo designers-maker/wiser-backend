@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Volunteer() {
+export default function IndividualVolunteering() {
   const navigate = useNavigate();
 
   return (
@@ -17,27 +17,17 @@ export default function Volunteer() {
         <div className="relative z-10 max-w-6xl mx-auto space-y-8">
           
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-6xl font-bold tracking-tight text-slate-900">
-            Volunteer <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">With Us</span>
+            Individual <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-600">Volunteering</span>
           </h1>
           
           <p className="text-lg sm:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Join us as a volunteer and help create real impact in community.
+            Join us as an individual volunteer and help create real impact in community.
           </p>
 
           {/* Buttons Section */}
           <div className="flex flex-wrap items-center justify-center gap-4">
             
-            {/* 1. Corporate Volunteering Button */}
-            <button
-              onClick={() => navigate('/volunteer/csr')}
-              className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-red-500/40"
-              style={{ background: 'linear-gradient(to right, #dc2626, #ea580c)' }}
-            >
-              <span className="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-500 ease-out"></span>
-              <span className="relative z-10">Corporate Volunteering</span>
-            </button>
-
-            {/* 2. Individual Volunteering Button */}
+            {/* Apply to Volunteer Button */}
             <button
               onClick={() => navigate('/volunteer/form')}
               className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-red-500/40"
@@ -45,16 +35,6 @@ export default function Volunteer() {
             >
               <span className="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-500 ease-out"></span>
               <span className="relative z-10">Individual Volunteering</span>
-            </button>
-
-            {/* 3. Request for Volunteering Button */}
-            <button
-              onClick={() => navigate('/volunteer/request')}
-              className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-red-500/40"
-              style={{ background: 'linear-gradient(to right, #dc2626, #ea580c)' }}
-            >
-              <span className="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-500 ease-out"></span>
-              <span className="relative z-10">Request for Volunteering</span>
             </button>
 
           </div>
@@ -71,16 +51,16 @@ export default function Volunteer() {
           <div className="bg-white p-8 md:p-5 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-2xl">💡</div>
-              <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Why Volunteer?</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Why Individual Volunteering?</h3>
             </div>
             
             <div className="space-y-6 flex-grow">
               {[
-                { icon: '⏱️', title: 'Contribute Time', text: 'Contribute time and skills to meaningful projects.' },
-                { icon: '🤝', title: 'Supportive Team', text: 'Work with a supportive team and mentors.' },
+                { icon: '⏱️', title: 'Flexible Hours', text: 'Choose hours that fit your schedule.' },
+                { icon: '🤝', title: 'Skill Development', text: 'Develop new skills while helping others.' },
                 { icon: '📈', title: 'Career Growth', text: 'Build experience that strengthens your career profile.' },
                 { icon: '❤️', title: 'Community Impact', text: 'Make a positive difference in your community.' },
-                { icon: '🌐', title: 'Networking', text: 'Network with like-minded individuals.' }
+                { icon: '🌐', title: 'Networking', text: 'Connect with like-minded individuals.' }
               ].map((item, i) => (
                 <div key={i} className="flex gap-4 group hover:bg-slate-50 p-4 rounded-2xl transition-colors duration-300 cursor-default">
                   <div className="flex-shrink-0 text-2xl group-hover:scale-110 transition-transform duration-300">{item.icon}</div>

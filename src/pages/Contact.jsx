@@ -1,9 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Contact() {
-  const handleSubmit = (e) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Thank you for your message! (This is a demo form)');
+    setLoading(true);
+    setStatus(null);
+    setErrorMessage('');
+    
+    const formData = { name, email, subject, message };
+    console.log('📝 Contact form - Submitting:', formData);
+    
+    try {
+      const resp = await fetch('/api/forms/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      let result;
+      try {
+        result = await resp.json();
+      } catch (jsonError) {
+        throw new Error('Server returned invalid response');
+      }
+      
+      console.log('Response:', result);
+      
+      if (!resp.ok) {
+        console.error('❌ Contact form failed:', result);
+        const errorMsg = result.message || result.error || 'Failed to submit';
+        setErrorMessage(errorMsg);
+        throw new Error(errorMsg);
+      }
+      
+      console.log('✅ Contact form submitted successfully:', result);
+      setStatus('success');
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+    } catch (error) {
+      console.error('❌ Contact form error:', error);
+      setStatus('error');
+      if (!errorMessage) {
+        setErrorMessage(error.message || 'Failed to send message');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -99,6 +150,8 @@ export default function Contact() {
                 <input 
                   type="text" 
                   placeholder="John Doe" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
                   required
                 />
@@ -109,6 +162,8 @@ export default function Contact() {
                 <input 
                   type="email" 
                   placeholder="john@example.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
                   required
                 />
@@ -119,6 +174,8 @@ export default function Contact() {
                 <input 
                   type="text" 
                   placeholder="Volunteer Inquiry" 
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
                   required
                 />
@@ -129,6 +186,8 @@ export default function Contact() {
                 <textarea 
                   rows="4" 
                   placeholder="How can we help you?" 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all resize-none flex-grow"
                   required
                 ></textarea>
@@ -136,10 +195,22 @@ export default function Contact() {
 
               <button 
                 type="submit" 
-                className="w-full py-3 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-800 hover:to-red-700 text-white rounded-xl text-lg font-bold shadow-lg shadow-red-200 hover:shadow-red-300 transition-all duration-300 hover:-translate-y-1"
+                className="w-full py-3 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-800 hover:to-red-700 text-white rounded-xl text-lg font-bold shadow-lg shadow-red-200 hover:shadow-red-300 transition-all duration-300 hover:-translate-y-1 disabled:opacity-50"
+                disabled={loading}
               >
-                Send Message
+                {loading ? 'Sending...' : 'Send Message'}
               </button>
+              {status === 'success' && (
+                <p className="text-green-600 text-sm font-semibold mt-2">Submitted Successfully!</p>
+              )}
+              {status === 'error' && (
+                <div className="mt-2">
+                  <p className="text-red-600 text-sm font-semibold">Failed to send message.</p>
+                  {errorMessage && (
+                    <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+                  )}
+                </div>
+              )}
             </form>
             
             <p className="text-xs text-gray-400 text-center mt-2">
