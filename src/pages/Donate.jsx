@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 export default function Donate() {
   const UPI_PAYEE_VPA = '8197963583@ybl';
@@ -126,7 +127,7 @@ export default function Donate() {
     console.log('Creating pending donation:', donationData);
 
     try {
-      const response = await fetch('/api/forms/donation', {
+      const response = await fetch(`${API_BASE_URL}/api/forms/donation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(donationData)
@@ -151,7 +152,7 @@ export default function Donate() {
   // Update donation status to completed
   async function confirmDonation(donationId) {
     try {
-      const response = await fetch(`/api/forms/donation/${donationId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/forms/donation/${donationId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

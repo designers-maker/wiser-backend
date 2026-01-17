@@ -2,7 +2,7 @@
 const getApiUrl = () => {
   // Production (when deployed)
   if (import.meta.env.PROD) {
-    return 'https://YOUR_RENDER_BACKEND_URL.onrender.com'; // Replace with your Render URL
+    return 'https://wiser-backend-66lo.onrender.com';
   }
   // Development (local)
   return 'http://localhost:3001';

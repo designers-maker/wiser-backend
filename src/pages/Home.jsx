@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { SITE } from '../data/siteContent';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -92,20 +93,30 @@ export default function Home() {
             Be The <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400">Future</span>. <br />
             <span className="text-white">Serve Today.</span>
           </h1>
-          <button
-            onClick={() => navigate('/volunteer')}
-            className="group relative inline-flex items-center justify-center px-8 py-3 sm:px-10 sm:py-4 font-bold text-white text-base sm:text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-orange-500/40 touch-manipulation"
-            style={{ background: 'linear-gradient(to right, #2563eb, #ea580c)' }}
-          >
-            <span className="absolute w-64 h-64 mt-12 group-hover:-rotate-45 group-hover:-mt-24 transition-all duration-1000 ease-out -translate-x-56 bg-white opacity-20 rotate-45 block"></span>
-            <span className="relative z-10">Volunteer with Wiser</span>
-          </button>
+          <div className="flex flex-col items-center gap-3 sm:gap-4">
+            <button
+              onClick={() => navigate('/volunteer')}
+              className="group/vol relative inline-flex items-center justify-center px-8 py-3 sm:px-10 sm:py-4 font-bold text-white text-base sm:text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-orange-500/40 touch-manipulation"
+              style={{ background: 'linear-gradient(to right, #2563eb, #ea580c)' }}
+            >
+              <span className="absolute w-64 h-64 mt-12 group-hover/vol:-rotate-45 group-hover/vol:-mt-24 transition-all duration-1000 ease-out -translate-x-56 bg-white opacity-20 rotate-45 block pointer-events-none"></span>
+              <span className="relative z-10">Volunteer with Wiser</span>
+            </button>
+            <a
+              href={`tel:${SITE.phone.replace(/\s+/g, '')}`}
+              className="group/call relative inline-flex items-center justify-center px-8 py-3 sm:px-10 sm:py-4 font-bold text-white text-base sm:text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-blue-500/40 touch-manipulation"
+              style={{ background: 'linear-gradient(to right, #2563eb, #1d4ed8)' }}
+            >
+              <span className="absolute w-64 h-64 mt-12 group-hover/call:-rotate-45 group-hover/call:-mt-24 transition-all duration-1000 ease-out -translate-x-56 bg-white opacity-20 rotate-45 block pointer-events-none"></span>
+              <span className="relative z-10">Contact Us</span>
+            </a>
+          </div>
         </div>
       </section>
 
       {/* 2. OUR PROGRAMS */}
-      <section className="w-full px-4 sm:px-6 lg:px-0 max-w-7xl mx-auto py-10 space-y-8 reveal-on-scroll">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8 md:mb-12">
+      <section className="w-full px-4 sm:px-6 lg:px-0 max-w-7xl mx-auto py-6 space-y-6 reveal-on-scroll">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-6 md:mb-8">
            <div className="h-16 w-2 bg-gradient-to-b from-blue-600 to-orange-500 rounded-full shadow-lg"></div>
            <div>
              <span className="text-blue-600 font-bold tracking-widest text-xs uppercase mb-1 block">What We Do</span>
@@ -122,9 +133,9 @@ export default function Home() {
       {/* ========================================= */}
       {/* 🆕 INFOGRAPHIC 1: TOPIC HUB 🆕 */}
       {/* ========================================= */}
-      <section id="infographic-section" className="w-full relative reveal-on-scroll bg-gradient-to-br from-white via-slate-50 to-white py-6 sm:py-8 px-4">
+      <section id="infographic-section" className="w-full relative reveal-on-scroll bg-gradient-to-br from-white via-slate-50 to-white py-2 sm:py-4 px-4">
         <div className="w-full px-4 sm:px-6 max-w-7xl mx-auto flex flex-col items-center">
-           <div className="text-center mb-6 sm:mb-8 w-full">
+           <div className="text-center mb-3 sm:mb-4 w-full">
              <span className="text-blue-600 font-bold tracking-widest text-xs uppercase mb-2 block">Our Methodology</span>
              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900">How We <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-600">Function</span></h2>
            </div>
@@ -134,27 +145,18 @@ export default function Home() {
       </section>
 
       {/* ========================================= */}
-      {/* 🆕 INFOGRAPHIC 2: PROCESS FLOW 🆕 */}
+      {/* 🆕 INFOGRAPHIC 2: ORBITING CORE VALUES 🆕 */}
       {/* ========================================= */}
-      <section className="w-full relative bg-slate-900 text-white py-8 sm:py-12 px-4 overflow-hidden">
-         <div className="text-center mb-12">
-             <span className="text-cyan-400 font-bold tracking-widest text-xs uppercase mb-2 block">Process Flow</span>
+      <section className="w-full relative bg-slate-900 text-white py-6 sm:py-8 px-4 overflow-hidden">
+         {/* <div className="text-center mb-12">
+             <span className="text-cyan-400 font-bold tracking-widest text-xs uppercase mb-2 block">Core Values</span>
              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">System <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Architecture</span></h2>
-         </div>
-         {/* The Component 2 */}
+         </div> */}
+         
+         {/* The New Component 2 */}
          <SecondInfographic />
          
-         {/* "TELL US" BUTTON SECTION */}
-         <div className="flex justify-center mt-16 mb-4">
-            <button
-            onClick={() => navigate('/contact')} // Update route as needed
-            className="group relative inline-flex items-center justify-center px-8 py-3 sm:px-10 sm:py-4 font-bold text-white text-base sm:text-lg rounded-full shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-orange-500/40 touch-manipulation"
-            style={{ background: 'linear-gradient(to right, #2563eb, #ea580c)' }}
-          >
-            <span className="absolute w-64 h-64 mt-12 group-hover:-rotate-45 group-hover:-mt-24 transition-all duration-1000 ease-out -translate-x-56 bg-white opacity-20 rotate-45 block"></span>
-            <span className="relative z-10">Tell Us</span>
-          </button>
-         </div>
+         {/* "TELL US" BUTTON REMOVED */}
       </section>
 
       {/* 3. Videos Section */}
@@ -232,21 +234,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Certifications */}
-      <section className="w-full py-12 relative reveal-on-scroll">
-        <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-12">
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-orange-600 pb-2">Certified Excellence</h2>
-          <div className="flex flex-wrap gap-8 md:gap-12 items-center justify-center">
-            {['cert1', 'cert2', 'cert3', 'cert4'].map((cert, i) => (
-              <div key={i} className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-orange-400 blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full"></div>
-                <img src={`/certs/${i % 2 === 0 ? '1.png' : '3.png'}`} alt="Certification" className="relative h-12 md:h-16 object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-110" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      
+
     </main>
   );
 }
@@ -335,7 +323,7 @@ function HorizontalOvuleInfographic() {
   };
 
   return (
-    <div className="relative w-full max-w-full mx-auto h-auto min-h-[400px] sm:min-h-[550px] md:min-h-[600px] lg:min-h-[650px] py-8 px-2 sm:px-4 md:px-6 overflow-visible">
+    <div className="relative w-full max-w-full mx-auto h-auto min-h-[400px] sm:min-h-[550px] md:min-h-[600px] lg:min-h-[650px] py-2 sm:py-3 px-2 sm:px-3 md:px-4 overflow-visible">
       
       {/* SVG Layer */}
       {!isMobile && (
@@ -445,108 +433,315 @@ function HorizontalOvuleInfographic() {
 }
 
 // ==========================================
-// 🆕 INFOGRAPHIC 2: PROCESS FLOW (FINAL FIX)
+// 🆕 INFOGRAPHIC 2: ORBITING CORE VALUES (FIXED ICONS)
 // ==========================================
 function SecondInfographic() {
-  const svgRef = useRef(null);
-  const centerRef = useRef(null);
-  const boxesRef = useRef([]);
-
-  const boxesData = [
-    { title: "Analysis", desc: "Processing raw data inputs.", icon: "📊" },
-    { title: "Strategy", desc: "Planning the road ahead.", icon: "♟️" },
-    { title: "Design", desc: "Creating visual interfaces.", icon: "🎨" },
-    { title: "Develop", desc: "Writing clean code.", icon: "💻" },
-    { title: "Testing", desc: "Ensuring quality assurance.", icon: "🧪" },
-    { title: "Deploy", desc: "Launching to the world.", icon: "🚀" },
-    { title: "Monitor", desc: "Tracking system health.", icon: "📡" },
-    { title: "Scale", desc: "Growing infrastructure.", icon: "📈" }
+  const items = [
+    { 
+      id: 1, title: "Analysis", desc: "Data driven", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> 
+    },
+    { 
+      id: 2, title: "Strategy", desc: "Roadmap", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 
+    },
+    { 
+      id: 3, title: "Design", desc: "UI / UX", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg> 
+    },
+    { 
+      id: 4, title: "Develop", desc: "Code build", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> 
+    },
+    { 
+      id: 5, title: "Testing", desc: "QA checks", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> 
+    },
+    { 
+      id: 6, title: "Deploy", desc: "Go live", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> 
+    },
+    { 
+      id: 7, title: "Monitor", desc: "Performance", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> 
+    },
+    { 
+      id: 8, title: "Scale", desc: "Growth", 
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> 
+    }
   ];
 
-  useEffect(() => {
-    const drawLines = () => {
-      if (!svgRef.current || !centerRef.current) return;
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const containerRect = svgRef.current.parentElement.getBoundingClientRect();
-      
-      const centerRect = centerRef.current.getBoundingClientRect();
-      const startX = (centerRect.left + centerRect.width / 2) - svgRect.left;
-      const startY = (centerRect.bottom) - svgRect.top;
-
-      svgRef.current.innerHTML = ''; 
-
-      boxesRef.current.forEach((box, i) => {
-        if (!box) return;
-        const boxRect = box.getBoundingClientRect();
-        const endX = (boxRect.left + boxRect.width / 2) - svgRect.left;
-        const endY = (boxRect.top) - svgRect.top;
-
-        const midY = (startY + endY) / 2;
-        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
-
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-
-        // FIX: Use Solid Bright Cyan instead of transparent dark
-        const flowPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        flowPath.setAttribute("d", d);
-        flowPath.setAttribute("class", "flow-path-solid"); // New solid class
-        flowPath.dataset.index = i;
-
-        g.appendChild(flowPath);
-        svgRef.current.appendChild(g);
-      });
-    };
-
-    setTimeout(drawLines, 100);
-    window.addEventListener('resize', drawLines);
-    return () => window.removeEventListener('resize', drawLines);
-  }, []);
-
   return (
-    <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center">
-        <svg ref={svgRef} className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible" preserveAspectRatio="xMidYMid meet"></svg>
+    <div className="w-full max-w-7xl mx-auto flex justify-center items-center py-0">
+      <style>{`
+        /* --- Scoped CSS Variables --- */
+        .orbit-infographic-root {
+            --orbit-bg-dark: #0f172a;
+            --orbit-box-bg: rgba(30, 41, 59, 0.9);
+            --orbit-box-border: rgba(148, 163, 184, 0.3);
+            --orbit-accent-primary: #38bdf8; /* Cyan */
+            --orbit-accent-secondary: #818cf8; /* Indigo */
+            --orbit-text-main: #f1f5f9;
+            --orbit-text-sub: #94a3b8;
+            --orbit-glow: 0 0 25px rgba(56, 189, 248, 0.6);
+            /* Box Sizes */
+            --orbit-box-width: 200px;
+            --orbit-box-height: 180px;
+        }
 
-        <div ref={centerRef} className="relative z-10 bg-gradient-to-br from-blue-600 to-blue-800 p-8 md:p-10 rounded-2xl border border-white/10 shadow-2xl text-center mb-16 md:mb-20 min-w-[200px]">
-            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-wider mb-2">System</h2>
-            <p className="text-blue-200 text-sm">Core Architecture</p>
-        </div>
+        .orbit-infographic-wrapper {
+            position: relative;
+            /* EXPANDED HORIZONTALLY: 1400px */
+            width: 100%;
+            max-width: 1400px; 
+            height: 1400px; /* Square container */
+            transform-style: preserve-3d;
+            transform: rotateX(10deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0; /* Remove margin */
+        }
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 w-full z-10 relative">
-            {boxesData.map((item, i) => (
-                <article 
-                    key={i}
-                    ref={el => boxesRef.current[i] = el}
-                    className="boxer-card relative bg-slate-800 border border-slate-700 rounded-xl p-6 text-center transition-all duration-300 hover:scale-105 hover:border-cyan-400 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] hover:bg-slate-700 opacity-0 animate-[slideUpBox_0.6s_ease-out_forwards]"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                >
-                    {/* Connector Dot */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_10px_#22d3ee] opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-                    
-                    <div className="text-3xl md:text-4xl mb-3">{item.icon}</div>
-                    <h3 className="text-lg md:text-xl font-bold text-cyan-400 mb-2">{item.title}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
-                </article>
-            ))}
-        </div>
+        /* --- Rotating Decorative Rings --- */
+        .orbit-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 1px dashed rgba(56, 189, 248, 0.2);
+            pointer-events: none;
+        }
 
-        <style>{`
-            @keyframes slideUpBox { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-            
-            /* FIXED ANIMATION: Pulsing Solid Bright Line */
-            @keyframes pulseBrightLine {
-                0% { opacity: 0.2; stroke: #22d3ee; }
-                50% { opacity: 1; stroke: #67e8f9; } /* Lighter Cyan */
-                100% { opacity: 0.2; stroke: #22d3ee; }
+        .orbit-ring-1 {
+            width: 650px;
+            height: 650px;
+            border-color: rgba(129, 140, 248, 0.15);
+            animation: orbit-rotate-cw 20s linear infinite;
+        }
+
+        .orbit-ring-2 {
+            width: 1050px;
+            height: 1050px;
+            border-color: rgba(56, 189, 248, 0.15);
+            animation: orbit-rotate-ccw 30s linear infinite;
+        }
+
+        /* --- Center Node --- */
+        .orbit-center-node {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, var(--orbit-accent-secondary), var(--orbit-accent-primary));
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+            z-index: 10;
+            animation: orbit-pulse 4s ease-in-out infinite;
+        }
+
+        .orbit-center-node h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        /* --- The 8 Orbiting Boxes --- */
+        .orbit-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        .orbit-point-box {
+            position: absolute;
+            width: var(--orbit-box-width);
+            height: var(--orbit-box-height);
+            background: var(--orbit-box-bg);
+            border: 1px solid var(--orbit-box-border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            padding: 20px 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            top: 50%;
+            left: 50%;
+            margin-top: calc(var(--orbit-box-height) / -2); 
+            margin-left: calc(var(--orbit-box-width) / -2); 
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            backface-visibility: hidden;
+        }
+
+        /* Hover Effect */
+        .orbit-point-box:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--orbit-accent-primary);
+            box-shadow: var(--orbit-glow);
+            cursor: pointer;
+        }
+
+        /* --- Icon Styling & Wrapper --- */
+        .orbit-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .orbit-point-box:hover .orbit-icon-wrapper {
+            background: var(--orbit-accent-primary);
+            box-shadow: 0 0 15px var(--orbit-accent-primary);
+            border-color: #fff;
+        }
+
+        .orbit-point-box:hover .orbit-icon-wrapper svg {
+            stroke: #fff; /* Change icon to white on hover */
+        }
+
+        /* Direct Icon Styling */
+        .orbit-icon {
+            color: var(--orbit-accent-primary);
+            transition: color 0.3s ease;
+        }
+
+        .orbit-point-box h3 {
+            font-size: 1.1rem;
+            color: var(--orbit-text-main);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .orbit-point-box p {
+            font-size: 0.8rem;
+            color: var(--orbit-text-sub);
+            line-height: 1.3;
+        }
+
+        /* --- Positioning Logic --- */
+        .orbit-pos-1 { transform: rotate(0deg) translate(525px) rotate(0deg); }
+        .orbit-pos-2 { transform: rotate(45deg) translate(525px) rotate(-45deg); }
+        .orbit-pos-3 { transform: rotate(90deg) translate(525px) rotate(-90deg); }
+        .orbit-pos-4 { transform: rotate(135deg) translate(525px) rotate(-135deg); }
+        .orbit-pos-5 { transform: rotate(180deg) translate(525px) rotate(-180deg); }
+        .orbit-pos-6 { transform: rotate(225deg) translate(525px) rotate(-225deg); }
+        .orbit-pos-7 { transform: rotate(270deg) translate(525px) rotate(-270deg); }
+        .orbit-pos-8 { transform: rotate(315deg) translate(525px) rotate(-315deg); }
+
+        /* --- Animations --- */
+        @keyframes orbit-rotate-cw {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes orbit-rotate-ccw {
+            from { transform: translate(-50%, -50%) rotate(360deg); }
+            to { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+
+        @keyframes orbit-pulse {
+            0% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); transform: translate(-50%, -50%) scale(1); }
+            50% { box-shadow: 0 0 40px rgba(56, 189, 248, 0.7); transform: translate(-50%, -50%) scale(1.03); }
+            100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1450px) {
+            .orbit-infographic-wrapper {
+                height: auto;
+                transform: none;
+                flex-direction: column;
+                padding-bottom: 40px;
             }
 
-            .flow-path-solid { 
-                fill: none; 
-                stroke-width: 3; 
-                stroke-linecap: round; 
-                animation: pulseBrightLine 3s ease-in-out infinite; 
+            .orbit-ring { display: none; }
+
+            .orbit-container {
+                position: relative;
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin-top: 30px;
             }
-            .boxer-card:hover div:first-of-type { opacity: 1; }
-        `}</style>
+
+            .orbit-center-node {
+                position: relative;
+                top: auto;
+                left: auto;
+                transform: none !important;
+                width: 100%;
+                max-width: 300px;
+                height: 120px;
+                border-radius: 15px;
+                margin-bottom: 10px;
+                animation: none;
+            }
+
+            .orbit-point-box {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin: 0;
+                transform: none !important;
+                width: 100%;
+                height: auto;
+                min-height: 140px;
+            }
+        }
+      `}</style>
+
+      <div className="orbit-infographic-root">
+        <div className="orbit-infographic-wrapper">
+            {/* Decorative Rings */}
+            <div className="orbit-ring orbit-ring-1"></div>
+            <div className="orbit-ring orbit-ring-2"></div>
+
+            {/* Center Title */}
+            <div className="orbit-center-node">
+                <h1>Core</h1>
+                <h1>Values</h1>
+            </div>
+
+            {/* Orbiting Container */}
+            <div className="orbit-container">
+                {items.map((item) => (
+                    <article key={item.id} className={`orbit-point-box orbit-pos-${item.id}`}>
+                        {/* Dedicated Space for Icon */}
+                        <div className="orbit-icon-wrapper">
+                            {/* Direct SVG Icon */}
+                            <div className="orbit-icon">
+                                {item.icon}
+                            </div>
+                        </div>
+                        <h3>{item.title}</h3>
+                        <p>{item.desc}</p>
+                    </article>
+                ))}
+            </div>
+        </div>
+      </div>
     </div>
   );
 }
