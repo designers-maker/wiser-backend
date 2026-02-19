@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getPartnerLogos, getCertificationImages, PROJECT_IMAGES } from '../config/images';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function Home() {
       <section
         className="relative h-[420px] md:h-[520px] flex items-center justify-center text-white"
         style={{
-          backgroundImage: "url('/images/hero.jpg')", // put your hero image here
+          backgroundImage: `url(${PROJECT_IMAGES.project1})`, // put your hero image here
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -34,10 +35,10 @@ export default function Home() {
         <h2 className="text-2xl font-bold">Stories of Change</h2>
         <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
           {/* replace src paths with your images */}
-          <img src="/images/story1.jpg" alt="Story 1" className="w-full h-40 object-cover rounded-lg" />
-          <img src="/images/story2.jpg" alt="Story 2" className="w-full h-40 object-cover rounded-lg" />
-          <img src="/images/story3.jpg" alt="Story 3" className="w-full h-40 object-cover rounded-lg" />
-          <img src="/images/story4.jpg" alt="Story 4" className="w-full h-40 object-cover rounded-lg" />
+          <img src={PROJECT_IMAGES.project1} alt="Story 1" className="w-full h-40 object-cover rounded-lg" />
+          <img src={PROJECT_IMAGES.project2} alt="Story 2" className="w-full h-40 object-cover rounded-lg" />
+          <img src={PROJECT_IMAGES.project3} alt="Story 3" className="w-full h-40 object-cover rounded-lg" />
+          <img src={PROJECT_IMAGES.project4} alt="Story 4" className="w-full h-40 object-cover rounded-lg" />
         </div>
       </section>
 
@@ -63,22 +64,22 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-4">
             <ProgramImage
               title="After-school Program"
-              img="/images/program1.jpg"
+              img={PROJECT_IMAGES.project1}
               to="/programs/after-school"
             />
             <ProgramImage
               title="Skill-building"
-              img="/images/program2.jpg"
+              img={PROJECT_IMAGES.project2}
               to="/programs/skills"
             />
             <ProgramImage
               title="Community Outreach"
-              img="/images/program3.jpg"
+              img={PROJECT_IMAGES.project3}
               to="/programs/outreach"
             />
             <ProgramImage
               title="Mentorship"
-              img="/images/program4.jpg"
+              img={PROJECT_IMAGES.project4}
               to="/programs/mentorship"
             />
           </div>
@@ -111,11 +112,20 @@ export default function Home() {
           <div className="overflow-hidden">
             <div className="flex gap-10 animate-scroll-x">
               {/* duplicate set of logos for infinite loop effect */}
-              {['p1', 'p2', 'p3', 'p4', 'p5', 'p1', 'p2', 'p3', 'p4', 'p5'].map((p, i) => (
+              {getPartnerLogos().map((logo, i) => (
                 <img
                   key={i}
-                  src={`/logos/${p}.png`}
-                  alt={`Partner ${p}`}
+                  src={logo}
+                  alt={`Partner ${i + 1}`}
+                  className="h-12 w-auto object-contain"
+                />
+              ))}
+              {/* Duplicate for infinite scroll */}
+              {getPartnerLogos().map((logo, i) => (
+                <img
+                  key={`dup-${i}`}
+                  src={logo}
+                  alt={`Partner ${i + 1}`}
                   className="h-12 w-auto object-contain"
                 />
               ))}
@@ -128,9 +138,9 @@ export default function Home() {
       <section className="container space-y-6 pb-12">
         <h2 className="text-2xl font-bold">We&apos;ve been certified by</h2>
         <div className="flex flex-wrap gap-8 items-center">
-          <img src="/certs/c1.png" alt="Certification 1" className="h-12 object-contain" />
-          <img src="/certs/c2.png" alt="Certification 2" className="h-12 object-contain" />
-          <img src="/certs/c3.png" alt="Certification 3" className="h-12 object-contain" />
+          {getCertificationImages().map((cert, i) => (
+            <img key={i} src={cert} alt={`Certification ${i + 1}`} className="h-12 object-contain" />
+          ))}
         </div>
       </section>
     </main>

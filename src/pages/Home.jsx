@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { SITE } from '../data/siteContent';
+import { getPartnerLogos, getCertificationImages } from '../config/images';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -9,11 +10,11 @@ export default function Home() {
   // Hero slideshow state
   const [currentSlide, setCurrentSlide] = useState(0);
   const heroImages = [
-    '/images/home1.jpeg',
-    '/images/home2.jpg',
-    '/images/home3.jpg',
-    '/images/home4.jpg',
-    '/images/home5.jpg'
+    HERO_IMAGES.home1,
+    HERO_IMAGES.home2,
+    HERO_IMAGES.home3,
+    HERO_IMAGES.home4,
+    HERO_IMAGES.home5
   ];
   
   // Auto-advance slideshow
@@ -64,6 +65,7 @@ export default function Home() {
     () => ['/animation/1.png', '/animation/2.png', '/animation/3.png', '/animation/4.png', '/animation/5.png'],
     []
   );
+  const { HERO_IMAGES, PROJECT_IMAGES } = require('../config/images');
   const [infographicIndex] = useState(() => Math.floor(Math.random() * infographicFrames.length));
 
   return (
@@ -436,8 +438,12 @@ export default function Home() {
             </div>
             <div className="w-full overflow-visible relative">
               <div className="flex gap-12 animate-scroll-x items-center">
-                {Array(20).fill(0).map((_, i) => (
-                  <img key={i} src={`/logos/partner${(i % 5) + 1}.png`} alt="Partner" className="h-12 md:h-16 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
+                {getPartnerLogos().map((logo, i) => (
+                  <img key={i} src={logo} alt="Partner" className="h-12 md:h-16 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
+                ))}
+                {/* Duplicate for infinite scroll effect */}
+                {getPartnerLogos().map((logo, i) => (
+                  <img key={`dup-${i}`} src={logo} alt="Partner" className="h-12 md:h-16 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
                 ))}
               </div>
               <div className="absolute inset-0 bg-gradient-to-r from-[#eff6ff] via-transparent to-[#fff7ed] pointer-events-none"></div>
