@@ -8,7 +8,7 @@ export default function CorporateVolunteering() {
     <main className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
       
       {/* 1. Header Section - NO IMAGE, Clean Typography */}
-      <section className="relative pt-20 pb-16 px-4 text-center overflow-hidden">
+      <section className="relative pt-20 pb-16 px-4 text-center overflow-visible">
         
         {/* Background Decoration (Abstract Shapes) */}
         <div className="absolute top-0 left-0 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
@@ -56,11 +56,11 @@ export default function CorporateVolunteering() {
             
             <div className="space-y-6 flex-grow">
               {[
-                { icon: '⏱️', title: 'Team Building', text: 'Strengthen team bonds through meaningful community work.' },
-                { icon: '🤝', title: 'CSR Goals', text: 'Meet corporate social responsibility objectives.' },
-                { icon: '📈', title: 'Brand Enhancement', text: "Enhance your company's reputation and brand image." },
-                { icon: '❤️', title: 'Community Impact', text: 'Make a positive difference in your community.' },
-                { icon: '🌐', title: 'Employee Engagement', text: 'Increase employee satisfaction and engagement.' }
+                { icon: '🧩', title: 'Team Collaboration', text: 'Build stronger teamwork through shared community initiatives.' },
+                { icon: '🎯', title: 'CSR Alignment', text: 'Support your company’s corporate social responsibility goals.' },
+                { icon: '🌟', title: 'Brand Value', text: "Enhance brand trust and public perception." },
+                { icon: '❤️', title: 'Community Impact', text: 'Create meaningful and lasting social change.' },
+                { icon: '👥', title: 'Employee Engagement', text: 'Boost morale, motivation, and job satisfaction.' }
               ].map((item, i) => (
                 <div key={i} className="flex gap-4 group hover:bg-slate-50 p-4 rounded-2xl transition-colors duration-300 cursor-default">
                   <div className="flex-shrink-0 text-2xl group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
@@ -87,19 +87,19 @@ export default function CorporateVolunteering() {
               <div className="relative pl-8 border-l-2 border-slate-600 pb-6 last:pb-0 last:border-0">
                 <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-red-500 border-2 border-slate-900"></div>
                 <h4 className="font-bold text-lg text-yellow-400 mb-1">Step 1: Contact Us</h4>
-                <p className="text-slate-300 text-sm md:text-base">Reach out to discuss your corporate volunteering needs and objectives.</p>
+                <p className="text-slate-300 text-sm md:text-base">Discuss your volunteering goals and preferences.</p>
               </div>
               
               <div className="relative pl-8 border-l-2 border-slate-600 pb-6 last:pb-0 last:border-0">
                 <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-orange-500 border-2 border-slate-900"></div>
-                <h4 className="font-bold text-lg text-yellow-400 mb-1">Step 2: Plan</h4>
-                <p className="text-slate-300 text-sm md:text-base">We'll work together to design a customized volunteering program.</p>
+                <h4 className="font-bold text-lg text-yellow-400 mb-1">Step 2: Customize</h4>
+                <p className="text-slate-300 text-sm md:text-base">Design a program tailored to your organization.</p>
               </div>
 
               <div className="relative pl-8 border-l-2 border-slate-600 pb-6 last:pb-0 last:border-0">
                 <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-blue-500 border-2 border-slate-900"></div>
                 <h4 className="font-bold text-lg text-yellow-400 mb-1">Step 3: Execute</h4>
-                <p className="text-slate-300 text-sm md:text-base">Launch your corporate volunteering initiative with our support!</p>
+                <p className="text-slate-300 text-sm md:text-base">Implement the initiative with full support.</p>
               </div>
             </div>
 

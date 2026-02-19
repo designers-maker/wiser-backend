@@ -113,12 +113,13 @@ export default function Projects() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 sm:py-20 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 sm:py-10 px-4">
       {/* Hero Header */}
-      <div className="text-center mb-16 sm:mb-24 max-w-4xl mx-auto">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl text-gray-900 bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight">
-          Our Transformative Projects
-        </h1>
+<div className="text-center mb-16 sm:mb-24 max-w-4xl mx-auto">
+  {/* Added font-bold and changed gradient to red-orange */}
+  <h1 className="font-bold text-4xl sm:text-6xl md:text-6xl text-gray-900 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-6 sm:mb-2 leading-tight">
+    Our Transformative Projects
+  </h1>
         <p className="text-lg sm:text-xl md:text-2xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
           Creating sustainable social impact across 6 key areas
         </p>
@@ -203,11 +204,12 @@ export default function Projects() {
         ))}
       </div>
 
-      {/* Combined Impact Section */}
-      <section className="mt-24 sm:mt-32 impact-section bg-white/50 backdrop-blur-xl rounded-3xl p-12 sm:p-16 border border-white/40 shadow-2xl max-w-6xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl text-gray-900 text-center mb-12 sm:mb-16 bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-          Our Combined Impact
-        </h2>
+     {/* Combined Impact Section */}
+<section className="mt-24 sm:mt-32 impact-section bg-white/50 backdrop-blur-xl rounded-3xl p-12 sm:p-16 border border-white/40 shadow-2xl max-w-6xl mx-auto">
+  {/* Added font-bold and updated gradient color */}
+  <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl text-center mb-12 sm:mb-16 bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+    Our Combined Impact
+  </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { num: "25000+", label: "Total Beneficiaries", desc: "Lives transformed" },

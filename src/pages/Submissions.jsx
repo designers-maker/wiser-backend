@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { API_BASE_URL } from '../config/api';
+import API_CONFIG from '../config/api';
 
 export default function Submissions() {
   const [active, setActive] = useState('individual_volunteering');
@@ -17,7 +17,7 @@ export default function Submissions() {
   const loadTab = (key) => {
     setLoading(true);
     setError('');
-    fetch(`${API_BASE_URL}/api/forms/${key}?limit=20`)
+    fetch(`/api/forms/${key}?limit=20`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((json) => {
         setData((prev) => ({ ...prev, [key]: json }));

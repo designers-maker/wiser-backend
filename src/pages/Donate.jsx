@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../config/api';
 
 export default function Donate() {
-  const UPI_PAYEE_VPA = '8197963583@ybl';
+  const UPI_PAYEE_VPA = 'eazypay.65D0EMH2PIB6ECV@icici';
   const UPI_PAYEE_NAME = 'WISER Foundation';
   const CURRENCY = 'INR';
 
@@ -13,43 +12,59 @@ export default function Donate() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // New state for Manual UPI Entry
+  const [showManualUpiModal, setShowManualUpiModal] = useState(false);
+  const [manualUpiId, setManualUpiId] = useState('');
+
   const predefinedAmounts = [1000, 2000, 3000, 5000, 10000];
 
-  // Check for payment success on page load
+  // Initialize page - check for returning users with successful payments
   useEffect(() => {
+    // Clear any previous success flags on fresh page load
+    sessionStorage.removeItem('showDonationSuccess');
+    
+    // Check if user is returning from a payment
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('payment') === 'success') {
-      setShowSuccess(true);
-      // Remove query parameter
+    const returnUrl = urlParams.get('return') || urlParams.get('source');
+    
+    if (returnUrl === 'upi-success') {
+      // User returned from successful UPI payment
+      const donationId = localStorage.getItem('pendingDonationId');
+      if (donationId) {
+        // Confirm the donation in database
+        confirmDonation(donationId)
+          .then(() => {
+            // Show receipt with payment details
+            const storedData = JSON.parse(localStorage.getItem('donationData') || '{}');
+            showPaymentReceipt({
+              name: storedData.name || donorName,
+              amount: storedData.amount || selectedAmount || parseInt(customAmount),
+              transactionId: `TXN_${Date.now()}` // In real implementation, this would come from payment gateway
+            });
+            
+            // Clean up
+            localStorage.removeItem('pendingDonationId');
+            localStorage.removeItem('donationData');
+          })
+          .catch(error => {
+            console.error('Failed to confirm donation:', error);
+          });
+      }
+      
+      // Remove return parameter from URL
       window.history.replaceState({}, document.title, window.location.pathname);
-      // Auto hide after 5 seconds
-      setTimeout(() => setShowSuccess(false), 5000);
     }
     
-    // Check for donation confirmation
-    const donationId = localStorage.getItem('pendingDonationId');
-    if (donationId) {
-      // Simulate payment confirmation (in real app, this would come from payment gateway)
-      setTimeout(async () => {
-        try {
-          await confirmDonation(donationId);
-          setShowSuccess(true);
-          localStorage.removeItem('pendingDonationId');
-          // Reset form
-          setSelectedAmount(null);
-          setCustomAmount('');
-          setDonorName('');
-        } catch (error) {
-          console.error('Failed to confirm donation:', error);
-        }
-      }, 2000);
-    }
-  }, []);
+    // Clean up any previous donation tracking
+    return () => {
+      // Clear any pending timeouts
+    };
+  }, [donorName, selectedAmount, customAmount]);
 
   // Handle Pay Button Click
   function handlePayClick() {
     const amount = selectedAmount || parseInt(customAmount);
-    if (!amount || amount < 1) {
+    if (!amount || amount < 1 || amount > 1000000) {
       alert('Please select or enter a valid amount');
       return;
     }
@@ -78,38 +93,121 @@ export default function Donate() {
     const pn = UPI_PAYEE_NAME;
     const finalAmount = amount || selectedAmount || customAmount;
 
+    if (!finalAmount || finalAmount < 1 || finalAmount > 1000000) {
+      alert('Please select or enter a valid amount');
+      return;
+    }
+    if (!donorName.trim()) {
+      alert('Please enter your name');
+      return;
+    }
+
     console.log('Opening payment app:', appKey, 'Amount:', finalAmount);
 
-    // Create temporary donation record with pending status
-    const tempDonationId = await createPendingDonation(finalAmount, appKey);
-    
-    const pkgMap = {
-      gpay: 'com.google.android.apps.nbu.paisa.user',
-      phonepe: 'com.phonepe.app',
-      paytm: 'net.one97.paytm',
-      bhim: 'in.org.npci.upiapp',
-    };
-
-    const pkg = pkgMap[appKey];
-    let intentUri = `intent://pay?pa=${encodeURIComponent(pa)}&pn=${encodeURIComponent(pn)}&cu=${CURRENCY}&tn=Donation_${tempDonationId}`;
-    if (finalAmount) {
-      intentUri += `&am=${finalAmount}`;
-    }
-    intentUri += `#Intent;scheme=upi;package=${pkg};end`;
-    
-    const fallback = buildUpiUri(finalAmount);
-
-    console.log('Payment URI:', intentUri);
-
-    // Redirect to payment app
     try {
-      window.location.href = intentUri;
-      setTimeout(() => {
-        window.location.href = fallback;
-      }, 1500);
-    } catch (e) {
-      console.error('Error redirecting to payment app:', e);
-      window.location.href = fallback;
+      // Store donation data immediately
+      const donationData = {
+        name: donorName.trim(),
+        amount: finalAmount,
+        paymentMethod: appKey.toUpperCase(),
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('donationData', JSON.stringify(donationData));
+      
+      // Create temporary donation record
+      const tempDonationId = await createPendingDonation(finalAmount, appKey);
+      localStorage.setItem('pendingDonationId', tempDonationId);
+      
+      // Detect platform for proper URI scheme
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      const pkgMap = {
+        gpay: 'com.google.android.apps.nbu.paisa.user',
+        phonepe: 'com.phonepe.app',
+        paytm: 'net.one97.paytm',
+      };
+
+      const pkg = pkgMap[appKey];
+      
+      let paymentUri;
+      if (isIOS) {
+        // iOS deep linking
+        paymentUri = `upi://pay?pa=${encodeURIComponent(pa)}&pn=${encodeURIComponent(pn)}&am=${finalAmount}&cu=${CURRENCY}&tn=Donation_${tempDonationId}`;
+      } else {
+        // Android intent
+        let intentUri = `intent://pay?pa=${encodeURIComponent(pa)}&pn=${encodeURIComponent(pn)}&cu=${CURRENCY}&tn=Donation_${tempDonationId}`;
+        if (finalAmount) {
+          intentUri += `&am=${finalAmount}`;
+        }
+        intentUri += `#Intent;scheme=upi;package=${pkg};end`;
+        paymentUri = intentUri;
+      }
+      
+      const fallback = buildUpiUri(finalAmount);
+
+      console.log('Payment URI:', paymentUri);
+      console.log('Platform detected:', isIOS ? 'iOS' : 'Android');
+
+      // Redirect to payment app
+      window.location.href = paymentUri;
+      
+    } catch (error) {
+      console.error('Error in payment process:', error);
+      alert('Payment setup failed. Please try again.\n\nError: ' + error.message);
+    }
+  }
+
+  // Handler for Manual UPI ID Entry
+  async function handleManualUpiPay() {
+    const amount = selectedAmount || parseInt(customAmount);
+    const finalAmount = amount || customAmount; // Ensure we get the string or number correctly
+
+    if (!finalAmount || finalAmount < 1 || finalAmount > 1000000) {
+      alert('Please select or enter a valid amount');
+      return;
+    }
+    if (!donorName.trim()) {
+      alert('Please enter your name');
+      return;
+    }
+    if (!manualUpiId.trim()) {
+      alert('Please enter your UPI ID');
+      return;
+    }
+
+    try {
+      // Store donation data immediately
+      const donationData = {
+        name: donorName.trim(),
+        amount: finalAmount,
+        paymentMethod: 'MANUAL_UPI',
+        upiId: manualUpiId.trim(),
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('donationData', JSON.stringify(donationData));
+      
+      // Create record for manual UPI attempt
+      const tempDonationId = await createPendingDonation(finalAmount, 'MANUAL_UPI');
+      localStorage.setItem('pendingDonationId', tempDonationId);
+      
+      // Construct universal UPI link that works on both platforms
+      const params = new URLSearchParams();
+      params.set('pa', UPI_PAYEE_VPA);
+      params.set('pn', UPI_PAYEE_NAME);
+      params.set('am', finalAmount.toString());
+      params.set('cu', CURRENCY);
+      params.set('tn', `Donation from ${manualUpiId}`);
+
+      const upiLink = `upi://pay?${params.toString()}`;
+      
+      // Attempt to open the default UPI handler
+      window.location.href = upiLink;
+      
+      setShowManualUpiModal(false);
+      
+    } catch (error) {
+      console.error('Error in manual UPI process:', error);
+      alert('Payment setup failed. Please try again.\n\nError: ' + error.message);
     }
   }
 
@@ -127,7 +225,7 @@ export default function Donate() {
     console.log('Creating pending donation:', donationData);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/forms/donation`, {
+      const response = await fetch('/api/forms/donation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(donationData)
@@ -144,7 +242,7 @@ export default function Donate() {
       return result.id;
     } catch (error) {
       console.error('Error creating pending donation:', error);
-      alert('Unable to process donation. Please try again.');
+      alert('Unable to process donation. Please try again.\n\nError: ' + error.message);
       throw error;
     }
   }
@@ -152,7 +250,7 @@ export default function Donate() {
   // Update donation status to completed
   async function confirmDonation(donationId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/forms/donation/${donationId}`, {
+      const response = await fetch(`/api/forms/donation/${donationId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -175,6 +273,32 @@ export default function Donate() {
       // Don't show alert here as user already paid
       throw error;
     }
+  }
+
+  // State for payment receipt
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [receiptData, setReceiptData] = useState({});
+
+  // Show payment receipt
+  function showPaymentReceipt(data) {
+    setReceiptData(data);
+    setShowReceipt(true);
+    setShowSuccess(false); // Hide success animation if showing
+  }
+
+  // Show success message after payment confirmation
+  function showPaymentSuccess() {
+    setShowSuccess(true);
+    // Auto hide after 5 seconds
+    setTimeout(() => setShowSuccess(false), 5000);
+    
+    // Reset form
+    setSelectedAmount(null);
+    setCustomAmount('');
+    setDonorName('');
+    setManualUpiId('');
+    setShowManualUpiModal(false);
+    setShowPaymentApps(false);
   }
 
   // Share donation
@@ -249,6 +373,114 @@ export default function Donate() {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Receipt Modal */}
+      {showReceipt && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-slideUp">
+            <div className="text-center">
+              {/* WISER Logo */}
+              <div className="mb-6">
+                <img src="/WISER Logo.png" alt="WISER Foundation" className="h-16 mx-auto" />
+              </div>
+              
+              {/* Payment Details */}
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Payment Receipt</h2>
+              
+              <div className="space-y-4 text-left">
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                  <span className="text-gray-600 font-medium">Donor Name:</span>
+                  <span className="font-bold text-gray-900">{receiptData.name}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                  <span className="text-gray-600 font-medium">Amount Paid:</span>
+                  <span className="font-bold text-green-600 text-xl">₹{receiptData.amount?.toLocaleString('en-IN')}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                  <span className="text-gray-600 font-medium">Status:</span>
+                  <span className="font-bold text-green-600 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                    Success
+                  </span>
+                </div>
+                
+                {receiptData.transactionId && (
+                  <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span className="text-gray-600 font-medium">Transaction ID:</span>
+                    <span className="font-mono text-sm text-gray-800">{receiptData.transactionId}</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <p className="text-center text-gray-600 mb-6">
+                  Thank you for your generous donation to WISER Foundation!
+                </p>
+                
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleShare}
+                    className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white rounded-xl font-bold transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                    Share
+                  </button>
+                  <button
+                    onClick={() => setShowReceipt(false)}
+                    className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-all duration-300"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manual UPI ID Modal */}
+      {showManualUpiModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn" onClick={() => setShowManualUpiModal(false)}>
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-slideUp" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Enter UPI ID</h2>
+                <p className="text-sm text-gray-600 mt-1">Amount: ₹{(selectedAmount || parseInt(customAmount)).toLocaleString('en-IN')}</p>
+              </div>
+              <button
+                onClick={() => setShowManualUpiModal(false)}
+                className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Your UPI ID</label>
+              <input
+                type="text"
+                value={manualUpiId}
+                onChange={(e) => setManualUpiId(e.target.value)}
+                placeholder="example@upi"
+                className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-lg font-semibold"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                We will redirect you to your payment app to complete the transaction securely.
+              </p>
+            </div>
+
+            <button
+              onClick={handleManualUpiPay}
+              disabled={!manualUpiId.trim()}
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white rounded-xl text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Pay Now
+            </button>
           </div>
         </div>
       )}
@@ -419,22 +651,20 @@ export default function Donate() {
                   <span className="font-bold text-gray-700 group-hover:text-blue-600">Paytm</span>
                 </button>
 
-                {/* BHIM UPI */}
+                {/* Enter UPI ID Button (Replaces BHIM) */}
                 <button
                   onClick={() => {
-                    openAppSpecific('bhim', selectedAmount || customAmount);
                     setShowPaymentApps(false);
+                    setShowManualUpiModal(true);
                   }}
-                  className="group bg-white border-2 border-gray-200 hover:border-orange-500 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col items-center gap-3"
+                  className="group bg-gray-50 border-2 border-gray-200 hover:border-blue-600 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col items-center gap-3"
                 >
-                  <div className="w-20 h-20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <img 
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/BHIM_logo.svg/1200px-BHIM_logo.svg.png" 
-                      alt="BHIM" 
-                      className="w-full h-full object-contain"
-                    />
+                  <div className="w-20 h-20 flex items-center justify-center bg-white rounded-full group-hover:scale-110 transition-transform shadow-sm">
+                    <svg className="w-10 h-10 text-gray-700 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                   </div>
-                  <span className="font-bold text-gray-700 group-hover:text-orange-600">BHIM UPI</span>
+                  <span className="font-bold text-gray-700 group-hover:text-blue-600">Enter UPI ID</span>
                 </button>
               </div>
 
@@ -463,7 +693,7 @@ export default function Donate() {
               <p className="text-sm font-semibold text-gray-700 mb-4">Scan QR Code</p>
               <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
                 <img 
-                  src="/images/qr code.jpg" 
+                  src="/images/WISER Foundation upi qr code-01.png" 
                   alt="UPI QR Code" 
                   className="w-40 h-40 object-contain"
                 />

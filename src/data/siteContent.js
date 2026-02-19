@@ -2,7 +2,7 @@ export const SITE = {
   orgName: "Wiser Volunteer",
   tagline: "Actioning volunteers to create positive social change",
   address: "jp nagar 2nd phase",
-  phone: "+91 9876543210",
+  phone: "+91 9916847774",
   email: "info@wiservolunteer.org",
   // sample programs used across the demo site
   programs: [

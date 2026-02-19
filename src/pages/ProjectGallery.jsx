@@ -16,12 +16,6 @@ export default function ProjectGallery() {
   const projectData = {
     1: {
       title: "Education for All",
-      numbers: [
-        { number: "5000+", metric: "Students Reached", icon: <UserIcon /> },
-        { number: "200+", metric: "Schools Partnered", icon: <BuildingIcon /> },
-        { number: "150+", metric: "Volunteer Teachers", icon: <CheckIcon /> },
-        { number: "80%", metric: "Success Rate", icon: <ChartIcon /> }
-      ],
       images: [
         '/images/1.jpg', '/images/2.jpg', '/images/3.jpg', '/images/4.jpg',
         '/images/5.jpg', '/images/6.jpg', '/images/7.jpg', '/images/8.jpg', '/images/9.jpg',
@@ -29,12 +23,6 @@ export default function ProjectGallery() {
     },
     2: {
       title: "Health & Wellness Initiative",
-      numbers: [
-        { number: "150+", metric: "Health Camps", icon: <BuildingIcon /> },
-        { number: "5000+", metric: "Patients Treated", icon: <UserIcon /> },
-        { number: "200+", metric: "Vaccinations Given", icon: <CheckIcon /> },
-        { number: "50+", metric: "Awareness Sessions", icon: <ChartIcon /> }
-      ],
       images: [
         '/images/9.jpg', '/images/10.jpg', '/images/11.jpg', '/images/12.jpg',
         '/images/13.jpg', '/images/14.jpg', '/images/15.jpg', '/images/16.jpg',
@@ -42,12 +30,6 @@ export default function ProjectGallery() {
     },
     3: {
       title: "Skill Development Program",
-      numbers: [
-        { number: "2000+", metric: "Youth Trained", icon: <UserIcon /> },
-        { number: "1200+", metric: "Jobs Secured", icon: <CheckIcon /> },
-        { number: "300+", metric: "Startups Created", icon: <ChartIcon /> },
-        { number: "95%", metric: "Placement Rate", icon: <BuildingIcon /> }
-      ],
       images: [
         '/images/17.jpg', '/images/18.jpg', '/images/19.jpg', '/images/20.jpg',
         '/images/21.jpg', '/images/22.jpg', '/images/23.jpg', '/images/24.jpg',
@@ -55,12 +37,6 @@ export default function ProjectGallery() {
     },
     4: {
       title: "Community Outreach",
-      numbers: [
-        { number: "50+", metric: "Communities Served", icon: <BuildingIcon /> },
-        { number: "100+", metric: "Projects Completed", icon: <CheckIcon /> },
-        { number: "5000+", metric: "Families Impacted", icon: <UserIcon /> },
-        { number: "200+", metric: "Events Organized", icon: <ChartIcon /> }
-      ],
       images: [
         '/images/25.jpg', '/images/26.jpg', '/images/27.jpg', '/images/28.jpg',
         '/images/29.jpg', '/images/30.jpg', '/images/31.jpg', '/images/32.jpg',
@@ -68,12 +44,6 @@ export default function ProjectGallery() {
     },
     5: {
       title: "Women Empowerment",
-      numbers: [
-        { number: "800+", metric: "Women Empowered", icon: <UserIcon /> },
-        { number: "300+", metric: "Businesses Started", icon: <ChartIcon /> },
-        { number: "500+", metric: "Training Sessions", icon: <CheckIcon /> },
-        { number: "70%", metric: "Financial Independence", icon: <BuildingIcon /> }
-      ],
       images: [
         '/images/33.jpg', '/images/34.jpg', '/images/35.jpg', '/images/36.jpg',
         '/images/37.jpg', '/images/38.jpg', '/images/39.jpg', '/images/40.jpg',
@@ -81,12 +51,6 @@ export default function ProjectGallery() {
     },
     6: {
       title: "Environmental Conservation",
-      numbers: [
-        { number: "10000+", metric: "Trees Planted", icon: <ChartIcon /> },
-        { number: "500+", metric: "Cleanup Drives", icon: <CheckIcon /> },
-        { number: "200+", metric: "Awareness Campaigns", icon: <BuildingIcon /> },
-        { number: "1000+", metric: "Volunteers Engaged", icon: <UserIcon /> }
-      ],
       images: [
         '/images/41.jpg', '/images/42.jpg', '/images/43.jpg', '/images/44.jpg',
         '/images/45.jpg', '/images/46.jpg', '/images/47.jpg', '/images/48.jpg',

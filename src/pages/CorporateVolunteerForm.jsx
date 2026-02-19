@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config/api';
 
 export default function CorporateVolunteerForm() {
   const navigate = useNavigate();
@@ -31,7 +30,7 @@ export default function CorporateVolunteerForm() {
     console.log('📝 Corporate Volunteer form - Submitting:', formData);
 
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/forms/corporate_volunteering`, {
+      const resp = await fetch('/api/forms/corporate_volunteering', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -188,7 +187,7 @@ export default function CorporateVolunteerForm() {
         
         <button
           type="button"
-          onClick={() => window.location.href = 'tel:+919876543210'}
+          onClick={() => window.location.href = 'tel:+919916847774'}
           className="w-48 mx-auto bg-gray-700 text-white px-6 py-3 font-semibold rounded-lg hover:bg-gray-800 transition-colors mt-3"
         >
           Contact Us

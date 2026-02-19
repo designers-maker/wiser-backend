@@ -2,11 +2,15 @@ const axios = require('axios');
 
 // Firebase Realtime Database REST API configuration
 const FIREBASE_URL = 'https://wiser-volunteer-default-rtdb.firebaseio.com';
+// Hardcoded database secret for now
+const DATABASE_SECRET = 'Zgzt6Imsj3JBdCTqIV4U9aOkJTDPSCoOyyLUkyck';
 
 // Simple Firebase REST API wrapper
 class FirebaseDB {
   constructor() {
+    // Store base URL without auth for proper URL construction
     this.baseUrl = FIREBASE_URL;
+    this.authParam = DATABASE_SECRET ? `?auth=${DATABASE_SECRET}` : '';
   }
 
   // Generic create function - now uses name/email as key
@@ -48,14 +52,20 @@ class FirebaseDB {
         updatedAt: timestamp
       };
 
-      // Use PUT with custom key instead of POST
-      const response = await axios.put(
-        `${this.baseUrl}/${collection}/${finalIdentifier}.json`,
-        payload
-      );
+      // Use PUT with custom key instead of POST to use our identifier
+      const url = `${this.baseUrl}/${collection}/${finalIdentifier}.json${this.authParam}`;
+      console.log('Firebase PUT URL:', url);
+      const response = await axios.put(url, payload);
 
+      // Return the identifier we used as the ID
       return { id: finalIdentifier, identifier: finalIdentifier };
     } catch (error) {
+      console.error('Firebase create error details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
       throw new Error(`Failed to create ${collection}: ${error.message}`);
     }
   }
@@ -63,7 +73,8 @@ class FirebaseDB {
   // Helper function to check if identifier exists
   async findByIdentifier(collection, identifier) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${collection}/${identifier}.json`);
+      const url = `${this.baseUrl}/${collection}/${identifier}.json${this.authParam}`;
+      const response = await axios.get(url);
       return response.data;
     } catch (error) {
       // If 404, item doesn't exist, which is fine
@@ -74,10 +85,29 @@ class FirebaseDB {
     }
   }
 
+  // Generic delete function
+  async delete(collection, identifier) {
+    try {
+      const url = `${this.baseUrl}/${collection}/${identifier}.json${this.authParam}`;
+      console.log('Firebase DELETE URL:', url);
+      const response = await axios.delete(url);
+      return response.data;
+    } catch (error) {
+      console.error('Firebase delete error details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+      throw new Error(`Failed to delete from ${collection}: ${error.message}`);
+    }
+  }
+
   // Generic find all function
   async findAll(collection, limit = 50) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${collection}.json`);
+      const url = `${this.baseUrl}/${collection}.json${this.authParam}`;
+      const response = await axios.get(url);
       
       if (!response.data) return [];
 
@@ -97,43 +127,58 @@ class FirebaseDB {
   // Updated collections with proper names
   individualVolunteering = {
     create: (data) => this.create('individual_volunteering_submissions', data),
-    findAll: (limit) => this.findAll('individual_volunteering_submissions', limit)
+    findAll: (limit) => this.findAll('individual_volunteering_submissions', limit),
+    delete: (id) => this.delete('individual_volunteering_submissions', id)
   };
 
   corporateVolunteering = {
     create: (data) => this.create('corporate_volunteering_submissions', data),
-    findAll: (limit) => this.findAll('corporate_volunteering_submissions', limit)
+    findAll: (limit) => this.findAll('corporate_volunteering_submissions', limit),
+    delete: (id) => this.delete('corporate_volunteering_submissions', id)
   };
 
   requestForVolunteering = {
     create: (data) => this.create('request_for_volunteering_submissions', data),
-    findAll: (limit) => this.findAll('request_for_volunteering_submissions', limit)
+    findAll: (limit) => this.findAll('request_for_volunteering_submissions', limit),
+    delete: (id) => this.delete('request_for_volunteering_submissions', id)
   };
 
   // Legacy collections (maintaining for backward compatibility)
   volunteer = {
     create: (data) => this.create('volunteer_submissions', data),
-    findAll: (limit) => this.findAll('volunteer_submissions', limit)
+    findAll: (limit) => this.findAll('volunteer_submissions', limit),
+    delete: (id) => this.delete('volunteer_submissions', id)
   };
 
   csr = {
     create: (data) => this.create('csr_submissions', data),
-    findAll: (limit) => this.findAll('csr_submissions', limit)
+    findAll: (limit) => this.findAll('csr_submissions', limit),
+    delete: (id) => this.delete('csr_submissions', id)
   };
 
   college = {
     create: (data) => this.create('college_submissions', data),
-    findAll: (limit) => this.findAll('college_submissions', limit)
+    findAll: (limit) => this.findAll('college_submissions', limit),
+    delete: (id) => this.delete('college_submissions', id)
   };
 
   contact = {
     create: (data) => this.create('contact_messages', data),
-    findAll: (limit) => this.findAll('contact_messages', limit)
+    findAll: (limit) => this.findAll('contact_messages', limit),
+    delete: (id) => this.delete('contact_messages', id)
   };
 
   donation = {
     create: (data) => this.create('donation_records', data),
-    findAll: (limit) => this.findAll('donation_records', limit)
+    findAll: (limit) => this.findAll('donation_records', limit),
+    delete: (id) => this.delete('donation_records', id)
+  };
+
+  // Company Volunteering Collection
+  companyVolunteering = {
+    create: (data) => this.create('company_volunteering_records', data),
+    findAll: (limit) => this.findAll('company_volunteering_records', limit),
+    delete: (id) => this.delete('company_volunteering_records', id)
   };
 
   // Aliases for backward compatibility

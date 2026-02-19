@@ -209,19 +209,19 @@ export default function ProgramSchoolVolunteering() {
         }
       `}</style>
 
-      {/* Hero Section */}
-      <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Section - Fixed Height to prevent cropping */}
+      <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center transform scale-105"
           style={{ backgroundImage: "url('/images/2.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
-          <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-semibold tracking-wide uppercase animate-pulse">
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-4 sm:space-y-6">
+          <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-xs sm:text-sm font-semibold tracking-wide uppercase animate-pulse">
             Education For Everyone
           </div>
-          {/* Updated Title with Gradient */}
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">
+          {/* Updated Title with Gradient and improved spacing */}
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] sm:leading-[1.15] drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">
             School Volunteering
           </h1>
           <p className="text-lg sm:text-2xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
@@ -241,7 +241,7 @@ export default function ProgramSchoolVolunteering() {
             <button onClick={closeMediaModal} className="absolute -top-16 right-0 text-white hover:text-gray-300 transition-transform hover:rotate-90 duration-300 z-10">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
-            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+            <div className="bg-black rounded-2xl overflow-visible shadow-2xl border border-white/10">
               {mediaType === 'image' ? (
                 <img src={mediaSrc} alt={mediaAlt} className="w-full h-[75vh] object-contain" />
               ) : (
@@ -257,7 +257,10 @@ export default function ProgramSchoolVolunteering() {
         
         {/* About Section - Gradient Title */}
         <div className="text-center max-w-4xl mx-auto space-y-6">
-          <h2 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">About School Volunteering Program</h2>
+          {/* Fixed Cropping: Added leading-snug/tight adjustment and px padding */}
+          <h2 className="px-2 text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500 leading-tight sm:leading-snug">
+            About School Volunteering Program
+          </h2>
           <p className="text-xl text-slate-600 leading-relaxed">
             Our School Volunteering Program brings passionate volunteers directly into schools serving
             underprivileged communities. Volunteers work collaboratively with teachers to provide
@@ -396,7 +399,10 @@ export default function ProgramSchoolVolunteering() {
         {/* Program in Action - Gradient Title */}
         <div className="space-y-8">
           <div className="text-center">
-            <h3 className="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">Program in Action</h3>
+            {/* Fixed Cropping: Added px-2 and adjusted leading */}
+            <h3 className="px-2 text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500 leading-tight sm:leading-snug">
+              Program in Action
+            </h3>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
@@ -433,23 +439,7 @@ export default function ProgramSchoolVolunteering() {
           </div>
         </div>
 
-        {/* How to Get Involved - White Text Title */}
-        <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-            <h3 className="text-3xl font-bold text-white">How to Get Involved</h3>
-            <p className="text-blue-100 text-lg">
-              Whether you're a teacher, professional, or student, you can make a difference!
-            </p>
-            <button
-              onClick={() => setShowContactForm(true)}
-              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              Send us a message
-            </button>
-          </div>
-        </div>
+        {/* REMOVED: How to Get Involved Section */}
 
         {/* Volunteer Stories - Gradient Title */}
         <div className="space-y-8">
@@ -528,55 +518,8 @@ export default function ProgramSchoolVolunteering() {
         </div>
       </section>
 
-      {/* Contact Form Modal */}
-      {showContactForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowContactForm(false)} />
-          <div className="relative bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl transform transition-all animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setShowContactForm(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">Send us a message</h3>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                console.log({ name: contactName, email: contactEmail, message: contactMessage });
-                setShowContactForm(false);
-                setContactName(''); setContactEmail(''); setContactMessage('');
-              }}
-            >
-              <input
-                value={contactName} onChange={(e) => setContactName(e.target.value)}
-                type="text" placeholder="Your Name" required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-              />
-              <input
-                value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
-                type="email" placeholder="Your Email" required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-              />
-              <textarea
-                value={contactMessage} onChange={(e) => setContactMessage(e.target.value)}
-                placeholder="Your Message" rows={4} required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all resize-none"
-              />
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg"
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* Call to Action - Updated Buttons */}
-      <section className="w-full bg-slate-900 py-7 text-white relative overflow-hidden">
+      <section className="w-full bg-slate-900 py-12 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-500 via-slate-900 to-slate-900"></div>
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10 space-y-6">
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Join Our School Volunteering Program</h2>

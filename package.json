@@ -11,14 +11,22 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "firebase-admin": "^13.6.0",
     "framer-motion": "^12.23.26",
+    "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.14.0",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.14.1"
+    "react-router-dom": "^6.14.1",
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",

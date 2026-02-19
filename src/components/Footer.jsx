@@ -4,57 +4,66 @@ import { Link } from 'react-router-dom'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 text-gray-700 mt-12">
+    <footer className="bg-gradient-to-r from-blue-700 to-orange-500 text-white mt-12">
       <div className="container py-8 sm:py-10 px-4">
         
         {/* 
-           Layout: 3 Columns
-           1. Left: Contact
-           2. Middle: Quick Links (Split 3 & 3)
-           3. Right: Social Media
+           Layout: Responsive Grid
+           Mobile: Stack vertically
+           Desktop: 3 Columns
         */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
           
           {/* --- LEFT SIDE: Contact --- */}
-          <div>
+          <div className="sm:col-span-2 lg:col-span-1">
             <h5 className="font-semibold text-sm sm:text-base mb-2">Contact</h5>
             <p className="text-xs sm:text-sm">Phone: {SITE.phone}</p>
             <p className="text-xs sm:text-sm">Email: {SITE.email}</p>
-            {/* Moving Address here as it usually pairs with Contact, or remove if not needed */}
             <p className="text-xs sm:text-sm mt-2">Address: {SITE.address}</p>
           </div>
 
-          {/* --- MIDDLE: Quick Links (Divided 3 and 3) --- */}
-          <div className="flex flex-row justify-center gap-8 sm:gap-16">
-            <div>
-              <h5 className="font-semibold text-sm sm:text-base mb-2">Quick Links</h5>
-              <ul className="text-xs sm:text-sm space-y-1">
-                <li><Link to="/" className="hover:text-red-700 transition-colors">Home</Link></li>
-                <li><Link to="/volunteer" className="hover:text-red-700 transition-colors">Volunteer</Link></li>
-                <li><Link to="/projects" className="hover:text-red-700 transition-colors">Projects</Link></li>
-              </ul>
-            </div>
-            <div>
-              {/* Spacer div to align second column with first column title */}
-              <div className="h-5 mb-2"></div> 
-              <ul className="text-xs sm:text-sm space-y-1">
-                <li><Link to="/gallery" className="hover:text-red-700 transition-colors">Gallery</Link></li>
-                <li><Link to="/donate" className="hover:text-red-700 transition-colors">Donate</Link></li>
-                <li><Link to="/contact" className="hover:text-red-700 transition-colors">Contact</Link></li>
-              </ul>
+          {/* --- MIDDLE: Quick Links (Stacked on mobile, side-by-side on larger screens) --- */}
+          <div className="lg:col-span-1">
+            <h5 className="font-semibold text-sm sm:text-base mb-2">Quick Links</h5>
+            <div className="grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <ul className="text-xs sm:text-sm space-y-1">
+                  <li><Link to="/" className="hover:text-gray-200 transition-colors">Home</Link></li>
+                  <li><Link to="/volunteer" className="hover:text-gray-200 transition-colors">Volunteer</Link></li>
+                  <li><Link to="/about" className="hover:text-gray-200 transition-colors">About Us</Link></li>
+                  <li><Link to="/projects" className="hover:text-gray-200 transition-colors">Projects</Link></li>
+                </ul>
+              </div>
+              <div>
+                <ul className="text-xs sm:text-sm space-y-1">
+                  <li><Link to="/gallery" className="hover:text-gray-200 transition-colors">Gallery</Link></li>
+                  <li><Link to="/reports" className="hover:text-gray-200 transition-colors">Reports</Link></li>
+                  <li><Link to="/donate" className="hover:text-gray-200 transition-colors">Donate</Link></li>
+                  <li><Link to="/contact" className="hover:text-gray-200 transition-colors">Contact</Link></li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* --- RIGHT SIDE: Social Media --- */}
-          <div className="flex flex-col items-center md:items-end text-center md:text-right">
-            <h4 className="font-bold text-lg mb-4">{SITE.orgName}</h4>
+          {/* --- RIGHT SIDE: Logo & Social Media --- */}
+          <div className="lg:col-span-1 flex flex-col items-start text-left">
             
-            <div className="flex gap-4">
+            {/* --- LOGO --- */}
+            <img 
+              src="/images/wiserlogo.png" 
+              alt="Logo" 
+              className="h-16 w-auto mb-4" 
+            />
+            
+            {/* --- ORGANIZATION NAME TEXT REMOVED HERE --- */}
+            
+            {/* --- SOCIAL MEDIA ICONS --- */}
+            <div className="flex flex-wrap justify-start gap-4">
               <a
                 href="https://www.facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-red-700 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -65,7 +74,7 @@ export default function Footer() {
                 href="https://www.twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-red-700 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -76,7 +85,7 @@ export default function Footer() {
                 href="https://www.instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-red-700 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -87,7 +96,7 @@ export default function Footer() {
                 href="https://www.linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-red-700 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors"
                 aria-label="LinkedIn"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -98,7 +107,7 @@ export default function Footer() {
                 href="https://www.youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 hover:text-red-700 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors"
                 aria-label="YouTube"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -111,7 +120,7 @@ export default function Footer() {
         </div>
       </div>
       
-      <div className="bg-gray-200 py-3 text-center text-xs sm:text-sm px-4">
+      <div className="bg-blue-900/30 py-3 text-center text-xs sm:text-sm px-4 text-white">
         © {new Date().getFullYear()} {SITE.orgName} — All rights reserved.
       </div>
     </footer>

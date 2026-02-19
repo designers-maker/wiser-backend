@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function ProgramCard({ p }) {
   return (
-    <article className="border rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow md:flex md:items-stretch">
+    <article className="border rounded overflow-visible shadow-sm hover:shadow-md transition-shadow md:flex md:items-stretch">
       {p.image && (
         <img
           src={p.image}

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { API_BASE_URL } from '../config/api';
 
 export default function Contact() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
+  const [contact, setContact] = useState('');
+  const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -15,11 +15,11 @@ export default function Contact() {
     setStatus(null);
     setErrorMessage('');
     
-    const formData = { name, email, subject, message };
+    const formData = { name, email, phone: contact, company, message };
     console.log('📝 Contact form - Submitting:', formData);
     
     try {
-      const resp = await fetch(`${API_BASE_URL}/api/forms/contact`, {
+      const resp = await fetch('/api/forms/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -45,7 +45,8 @@ export default function Contact() {
       setStatus('success');
       setName('');
       setEmail('');
-      setSubject('');
+      setContact('');
+      setCompany('');
       setMessage('');
     } catch (error) {
       console.error('❌ Contact form error:', error);
@@ -119,7 +120,7 @@ export default function Contact() {
                 <div>
                   <h3 className="font-bold text-gray-900">Call Us</h3>
                   <p className="text-gray-600 mt-1">
-                    +91 98765 43210<br/>
+                    +91 99168 47774<br/>
                     Mon-Fri, 9am - 6pm
                   </p>
                 </div>
@@ -171,14 +172,25 @@ export default function Contact() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Subject</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Number</label>
                 <input 
-                  type="text" 
-                  placeholder="Volunteer Inquiry" 
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+                  type="tel" 
+                  placeholder="Enter your contact number" 
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Company/Organization</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter your company or organization name" 
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
                 />
               </div>
 
