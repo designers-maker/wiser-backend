@@ -6,14 +6,35 @@ const firebaseDB = require("./firebase-db");
 console.log("✅ Firebase Realtime Database initialized...");
 
 const app = express();
-app.use(cors());
+
+// Configure CORS to allow requests from any origin in production
+// In production, when the frontend is deployed separately, we need to allow it
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      return callback(null, true);
+    }
+    
+    // In a production deployment, you'd want to specify your frontend domain
+    // For now, we'll allow all origins, but in a real production environment
+    // you should specify your actual frontend domain
+    callback(null, true);
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Firebase connection
 const connectDB = async () => {
   try {
     // Test Firebase connection
-    await firebaseDB.volunteer.findAll(1);
+    await firebaseDB.contact.findAll(1);
     console.log("✅ Firebase Realtime Database connected successfully");
     console.log(
       "🔗 Database URL: https://wiser-volunteer-default-rtdb.firebaseio.com",
@@ -24,6 +45,7 @@ const connectDB = async () => {
     console.error(
       "🔧 Please check Firebase configuration and network connectivity",
     );
+    console.error("💡 Make sure your service account credentials are correct");
   }
 };
 

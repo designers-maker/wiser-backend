@@ -1,12 +1,10 @@
-const axios = require('axios');
+const { db } = require('./firebase-admin-config');
 
-// Firebase Realtime Database REST API configuration
-const FIREBASE_URL = 'https://wiser-volunteer-default-rtdb.firebaseio.com';
-
-// Simple Firebase REST API wrapper
+// Firebase Realtime Database wrapper using Firebase Admin SDK
 class FirebaseDB {
   constructor() {
-    this.baseUrl = FIREBASE_URL;
+    // Using Firebase Admin SDK
+    this.db = db;
   }
 
   // Generic create function - now uses name/email as key
@@ -48,14 +46,17 @@ class FirebaseDB {
         updatedAt: timestamp
       };
 
-      // Use PUT with custom key instead of POST
-      const response = await axios.put(
-        `${this.baseUrl}/${collection}/${finalIdentifier}.json`,
-        payload
-      );
+      // Use set() with custom key instead of push to use our identifier
+      const ref = this.db.ref(`${collection}/${finalIdentifier}`);
+      await ref.set(payload);
 
+      // Return the identifier we used as the ID
       return { id: finalIdentifier, identifier: finalIdentifier };
     } catch (error) {
+      console.error('Firebase create error details:', {
+        message: error.message,
+        stack: error.stack
+      });
       throw new Error(`Failed to create ${collection}: ${error.message}`);
     }
   }
@@ -63,32 +64,32 @@ class FirebaseDB {
   // Helper function to check if identifier exists
   async findByIdentifier(collection, identifier) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${collection}/${identifier}.json`);
-      return response.data;
+      const ref = this.db.ref(`${collection}/${identifier}`);
+      const snapshot = await ref.once('value');
+      return snapshot.val();
     } catch (error) {
-      // If 404, item doesn't exist, which is fine
-      if (error.response && error.response.status === 404) {
-        return null;
-      }
-      throw error;
+      console.error('findByIdentifier error:', error.message);
+      return null;
     }
   }
 
   // Generic find all function
   async findAll(collection, limit = 50) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${collection}.json`);
+      const ref = this.db.ref(collection);
+      const snapshot = await ref.orderByChild('createdAt').limitToLast(limit).once('value');
+      const data = snapshot.val();
       
-      if (!response.data) return [];
+      if (!data) return [];
 
-      // Convert object to array and sort by createdAt
-      const results = Object.entries(response.data)
-        .map(([id, data]) => ({ id, ...data }))
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, limit);
+      // Convert object to array and sort by createdAt (descending)
+      const results = Object.entries(data)
+        .map(([id, value]) => ({ id, ...value }))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       return results;
     } catch (error) {
+      console.error('findAll error:', error.message);
       throw new Error(`Failed to find ${collection}: ${error.message}`);
     }
   }
