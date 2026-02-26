@@ -2,24 +2,7 @@ import React from 'react';
 import AnimatedCounter from '../components/AnimatedCounter';
 
 const team = [
-  { name: 'Asha Patel', role: 'Founder', img: '/images/team1.jpg' },
-  { name: 'Rahul Singh', role: 'Program Lead', img: '/images/team2.jpg' },
-  { name: 'Priya Sharma', role: 'Operations', img: '/images/team3.jpg' },
-  { name: 'Asha Patel', role: 'Founder', img: '/images/team1.jpg' },
-  { name: 'Rahul Singh', role: 'Program Lead', img: '/images/team2.jpg' },
-  { name: 'Priya Sharma', role: 'Operations', img: '/images/team3.jpg' },
-  { name: 'Asha Patel', role: 'Founder', img: '/images/team1.jpg' },
-  { name: 'Rahul Singh', role: 'Program Lead', img: '/images/team2.jpg' },
-  { name: 'Priya Sharma', role: 'Operations', img: '/images/team3.jpg' },
-  { name: 'Asha Patel', role: 'Founder', img: '/images/team1.jpg' },
-  { name: 'Rahul Singh', role: 'Program Lead', img: '/images/team2.jpg' },
-  { name: 'Priya Sharma', role: 'Operations', img: '/images/team3.jpg' },
-  { name: 'Asha Patel', role: 'Founder', img: '/images/team1.jpg' },
-  { name: 'Rahul Singh', role: 'Program Lead', img: '/images/team2.jpg' },
-  { name: 'Priya Sharma', role: 'Operations', img: '/images/team3.jpg' },
-  { name: 'Asha Patel', role: 'Founder', img: '/images/team1.jpg' },
-  { name: 'Rahul Singh', role: 'Program Lead', img: '/images/team2.jpg' },
-  { name: 'Priya Sharma', role: 'Operations', img: '/images/team3.jpg' },
+  { name: 'Vinod Prabhu B', role: 'Managing Trustee', img: '/images/Vinod sir photo.jpg' },
   // You can add more members here, and the counter below will update automatically!
 ];
 

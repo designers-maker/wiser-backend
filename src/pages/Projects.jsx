@@ -113,12 +113,13 @@ export default function Projects() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 sm:py-20 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 sm:py-10 px-4">
       {/* Hero Header */}
-      <div className="text-center mb-16 sm:mb-24 max-w-4xl mx-auto">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl text-gray-900 bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight">
-          Our Transformative Projects
-        </h1>
+<div className="text-center mb-16 sm:mb-24 max-w-4xl mx-auto">
+  {/* Added font-bold and changed gradient to red-orange */}
+  <h1 className="font-bold text-4xl sm:text-6xl md:text-6xl text-gray-900 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-6 sm:mb-2 leading-tight">
+    Our Transformative Projects
+  </h1>
         <p className="text-lg sm:text-xl md:text-2xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
           Creating sustainable social impact across 6 key areas
         </p>
@@ -129,72 +130,72 @@ export default function Projects() {
         {projects.map((project) => (
           <div
             key={project.id}
-            className={`group relative rounded-3xl p-6 sm:p-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2 border border-white/20 backdrop-blur-sm ${project.gradient}`}
+            className={`group relative rounded-3xl p-4 sm:p-6 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2 border border-white/20 backdrop-blur-sm ${project.gradient}`}
           >
             {/* Floating Icon */}
-            <div className="absolute -top-8 -right-8 w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-10 h-10 text-white/80">
+            <div className="absolute -top-6 -right-6 w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-8 h-8 text-white/80">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={project.icon} />
               </svg>
             </div>
-
+      
             {/* Main Image */}
-            <div className="relative mb-6 h-64 rounded-2xl overflow-hidden mx-auto shadow-lg">
+            <div className="relative mb-4 h-40 sm:h-48 rounded-2xl overflow-hidden mx-auto shadow-lg">
               <img
                 src={project.image}
                 alt={project.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
             </div>
-
+      
             {/* Title */}
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-6 text-center drop-shadow-lg">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-4 text-center drop-shadow-lg whitespace-normal">
               {project.title}
             </h3>
-
+      
             {/* Stats - ANIMATED NUMBERS */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
+            <div className="grid grid-cols-2 gap-2 mb-4">
               {project.numbers.map((stat, idx) => (
-                <div key={idx} className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm">
-                  <div className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg">
+                <div key={idx} className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm">
+                  <div className="text-lg sm:text-xl font-bold text-white drop-shadow-lg">
                     <AnimatedCounter end={stat.number} duration={2000} />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-bold text-white/90 text-center uppercase tracking-wide">{stat.metric}</span>
+                  <span className="text-[9px] sm:text-xs font-bold text-white/90 text-center uppercase tracking-wide">{stat.metric}</span>
                 </div>
               ))}
             </div>
-
+      
             {/* Short Description */}
-            <p className="text-sm sm:text-base text-white/95 text-center mb-8 leading-relaxed line-clamp-2">
+            <p className="text-xs sm:text-sm text-white/95 text-center mb-4 leading-relaxed">
               {project.desc}
             </p>
-
+      
             {/* 4 Images Gallery Preview */}
-            <div className="grid grid-cols-2 gap-3 mb-8 px-2">
+            <div className="grid grid-cols-2 gap-2 mb-4 px-1">
               {Array.from({ length: 4 }).map((_, i) => (
-                 <div key={i} className="h-24 rounded-lg overflow-hidden bg-white/20 border border-white/10 shadow-md hover:scale-105 transition-transform duration-300">
+                 <div key={i} className="h-16 sm:h-20 rounded-lg overflow-hidden bg-white/20 border border-white/10 shadow-md hover:scale-105 transition-transform duration-300">
                    <img src={project.image} alt="Gallery" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
                  </div>
               ))}
             </div>
-
+      
             {/* Action Buttons */}
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-2 justify-center">
               <button
                 onClick={() => navigate(`/projects/details/${project.id}`)}
-                className="px-5 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl font-bold text-white text-sm transition-all duration-300 border border-white/30 hover:border-white/50 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-2 group-btn"
+                className="px-3 py-2 sm:px-4 sm:py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl font-bold text-white text-xs sm:text-sm transition-all duration-300 border border-white/30 hover:border-white/50 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-1 sm:gap-2 group-btn"
               >
                 Read More
-                <svg className="w-4 h-4 group-btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 group-btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
               <button
                 onClick={() => navigate(`/projects/gallery/${project.id}`)}
-                className="px-5 py-3 bg-white text-indigo-900 hover:bg-gray-100 rounded-xl font-bold text-sm transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-2 group-btn"
+                className="px-3 py-2 sm:px-4 sm:py-2.5 bg-white text-indigo-900 hover:bg-gray-100 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 flex items-center gap-1 sm:gap-2 group-btn"
               >
                 View Gallery
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </button>
@@ -203,30 +204,52 @@ export default function Projects() {
         ))}
       </div>
 
-      {/* Combined Impact Section */}
-      <section className="mt-24 sm:mt-32 impact-section bg-white/50 backdrop-blur-xl rounded-3xl p-12 sm:p-16 border border-white/40 shadow-2xl max-w-6xl mx-auto">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl text-gray-900 text-center mb-12 sm:mb-16 bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-          Our Combined Impact
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { num: "25000+", label: "Total Beneficiaries", desc: "Lives transformed" },
-            { num: "1200+", label: "Active Volunteers", desc: "Change makers" },
-            { num: "35+", label: "Cities Covered", desc: "Nationwide reach" },
-            { num: "6", label: "Active Projects", desc: "Ongoing initiatives" }
-          ].map((stat, idx) => (
-            <div key={idx} className="group text-center hover:scale-105 transition-all duration-500 perspective-[1000px]">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-2xl group-hover:shadow-3xl transition-all duration-500 border-2 border-white/30 hover:-translate-y-1 hover:rotate-x-3">
-                <span className="text-lg sm:text-xl md:text-2xl font-bold text-white drop-shadow-xl">
-                  {impactVisible ? <AnimatedCounter end={stat.num} duration={2500} /> : stat.num}
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{stat.label}</h3>
-              <p className="text-xs sm:text-sm text-gray-600 font-medium">{stat.desc}</p>
+     {/* Professional Impact Section */}
+<section className="mt-20 impact-section max-w-7xl mx-auto">
+  <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+    {/* Section Header */}
+    <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-center">
+      <h2 className="text-3xl font-bold text-white mb-2">
+        Our Combined Impact
+      </h2>
+      <p className="text-blue-100 text-lg">
+        Measuring our commitment to social change
+      </p>
+    </div>
+
+    {/* Stats Grid - Clean and Professional */}
+    <div className="p-8 sm:p-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {[
+          { num: "25000+", label: "Beneficiaries", desc: "Lives transformed", icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" },
+          { num: "1200+", label: "Volunteers", desc: "Active contributors", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
+          { num: "35+", label: "Cities", desc: "Nationwide presence", icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 00-2-2h-.5a2.5 2.5 0 01-2.5-2.5V8" },
+          { num: "6", label: "Projects", desc: "Active initiatives", icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" }
+        ].map((stat, idx) => (
+          <div key={idx} className="text-center group">
+            {/* Icon */}
+            <div className="w-16 h-16 mx-auto mb-4 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-100 transition-colors duration-300">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
+              </svg>
             </div>
-          ))}
-        </div>
-      </section>
+            
+            {/* Number */}
+            <div className="mb-2">
+              <span className="text-3xl font-bold text-gray-900">
+                {impactVisible ? <AnimatedCounter end={stat.num} duration={2000} /> : stat.num}
+              </span>
+            </div>
+            
+            {/* Labels */}
+            <h3 className="text-lg font-semibold text-gray-800 mb-1">{stat.label}</h3>
+            <p className="text-sm text-gray-600">{stat.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
     </main>
   );
 }

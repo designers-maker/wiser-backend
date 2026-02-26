@@ -2,11 +2,15 @@ const axios = require('axios');
 
 // Firebase Realtime Database REST API configuration
 const FIREBASE_URL = 'https://wiser-volunteer-default-rtdb.firebaseio.com';
+// Hardcoded database secret for now
+const DATABASE_SECRET = 'Zgzt6Imsj3JBdCTqIV4U9aOkJTDPSCoOyyLUkyck';
 
 // Simple Firebase REST API wrapper
 class FirebaseDB {
   constructor() {
+    // Store base URL without auth for proper URL construction
     this.baseUrl = FIREBASE_URL;
+    this.authParam = DATABASE_SECRET ? `?auth=${DATABASE_SECRET}` : '';
   }
 
   // Generic create function - now uses name/email as key
@@ -48,14 +52,20 @@ class FirebaseDB {
         updatedAt: timestamp
       };
 
-      // Use PUT with custom key instead of POST
-      const response = await axios.put(
-        `${this.baseUrl}/${collection}/${finalIdentifier}.json`,
-        payload
-      );
+      // Use PUT with custom key instead of POST to use our identifier
+      const url = `${this.baseUrl}/${collection}/${finalIdentifier}.json${this.authParam}`;
+      console.log('Firebase PUT URL:', url);
+      const response = await axios.put(url, payload);
 
+      // Return the identifier we used as the ID
       return { id: finalIdentifier, identifier: finalIdentifier };
     } catch (error) {
+      console.error('Firebase create error details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
       throw new Error(`Failed to create ${collection}: ${error.message}`);
     }
   }
@@ -63,7 +73,8 @@ class FirebaseDB {
   // Helper function to check if identifier exists
   async findByIdentifier(collection, identifier) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${collection}/${identifier}.json`);
+      const url = `${this.baseUrl}/${collection}/${identifier}.json${this.authParam}`;
+      const response = await axios.get(url);
       return response.data;
     } catch (error) {
       // If 404, item doesn't exist, which is fine
@@ -77,7 +88,8 @@ class FirebaseDB {
   // Generic find all function
   async findAll(collection, limit = 50) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${collection}.json`);
+      const url = `${this.baseUrl}/${collection}.json${this.authParam}`;
+      const response = await axios.get(url);
       
       if (!response.data) return [];
 

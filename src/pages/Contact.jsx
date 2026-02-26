@@ -15,20 +15,60 @@ export default function Contact() {
     setStatus(null);
     setErrorMessage('');
     
+    // Validate form data
+    if (!name.trim()) {
+      setErrorMessage('Name is required');
+      setLoading(false);
+      return;
+    }
+    
+    if (!email.trim()) {
+      setErrorMessage('Email is required');
+      setLoading(false);
+      return;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setErrorMessage('Email is invalid');
+      setLoading(false);
+      return;
+    }
+    
+    if (!subject.trim()) {
+      setErrorMessage('Subject is required');
+      setLoading(false);
+      return;
+    }
+    
+    if (!message.trim()) {
+      setErrorMessage('Message is required');
+      setLoading(false);
+      return;
+    }
+    
     const formData = { name, email, subject, message };
     console.log('📝 Contact form - Submitting:', formData);
     
     try {
+      console.log('🚀 Sending request to:', `${API_BASE_URL}/api/forms/contact`);
+      
       const resp = await fetch(`${API_BASE_URL}/api/forms/contact`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          timestamp: new Date().toISOString()
+        })
       });
       
       let result;
       try {
         result = await resp.json();
       } catch (jsonError) {
+        console.error('❌ JSON parsing error:', jsonError);
         throw new Error('Server returned invalid response');
       }
       
@@ -36,7 +76,7 @@ export default function Contact() {
       
       if (!resp.ok) {
         console.error('❌ Contact form failed:', result);
-        const errorMsg = result.message || result.error || 'Failed to submit';
+        const errorMsg = result.message || result.error || `Failed to submit with status ${resp.status}`;
         setErrorMessage(errorMsg);
         throw new Error(errorMsg);
       }
@@ -47,11 +87,24 @@ export default function Contact() {
       setEmail('');
       setSubject('');
       setMessage('');
+      setErrorMessage(''); // Clear any previous error messages
     } catch (error) {
       console.error('❌ Contact form error:', error);
       setStatus('error');
-      if (!errorMessage) {
-        setErrorMessage(error.message || 'Failed to send message');
+      
+      // Enhanced error handling with specific messages
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setErrorMessage('Unable to connect to server. Please check your internet connection and try again.');
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        setErrorMessage('Network connection failed. Please check your internet connection.');
+      } else if (error.message.includes('invalid response') || error.message.includes('JSON')) {
+        setErrorMessage('Server error. Please try again in a few minutes.');
+      } else if (error.message.includes('404')) {
+        setErrorMessage('Form submission endpoint not found. Please contact support.');
+      } else if (error.message.includes('500')) {
+        setErrorMessage('Server internal error. Please try again later.');
+      } else {
+        setErrorMessage(error.message || 'Failed to send message. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -119,7 +172,7 @@ export default function Contact() {
                 <div>
                   <h3 className="font-bold text-gray-900">Call Us</h3>
                   <p className="text-gray-600 mt-1">
-                    +91 98765 43210<br/>
+                    +91 99168 47774<br/>
                     Mon-Fri, 9am - 6pm
                   </p>
                 </div>

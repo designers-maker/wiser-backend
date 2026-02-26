@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Submission Test</title>
+</head>
+<body>
+    <h1>Form Submission Test</h1>
+    <button onclick="testSubmission()">Test Form Submission</button>
+    <div id="result"></div>
+
+    <script>
+        async function testSubmission() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                console.log('API Base URL:', import.meta.env?.VITE_API_URL || 'Not set');
+                console.log('Window location:', window.location.origin);
+                
+                const response = await fetch('http://localhost:3001/api/forms/individual_volunteering', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: 'test@example.com',
+                        phone: '1234567890',
+                        company: 'Test Company',
+                        message: 'Test message'
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                console.log('Success:', data);
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Configuration Test</title>
+</head>
+<body>
+    <h1>API Configuration Test</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        // Import the API configuration
+        import { API_BASE_URL } from './src/config/api.js';
+        
+        const resultsDiv = document.getElementById('results');
+        
+        resultsDiv.innerHTML = `
+            <h2>API Configuration Results:</h2>
+            <p><strong>API_BASE_URL:</strong> ${API_BASE_URL}</p>
+            <p><strong>Window Location:</strong> ${window.location.origin}</p>
+            <p><strong>Hostname:</strong> ${window.location.hostname}</p>
+            <p><strong>Protocol:</strong> ${window.location.protocol}</p>
+        `;
+        
+        // Test the API connection
+        async function testAPI() {
+            try {
+                resultsDiv.innerHTML += '<p>Testing API connection...</p>';
+                
+                const response = await fetch(`${API_BASE_URL}/api/health`);
+                const data = await response.json();
+                
+                resultsDiv.innerHTML += `
+                    <p style="color: green;"><strong>✅ API Connection Successful!</strong></p>
+                    <p>Response: ${JSON.stringify(data)}</p>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML += `
+                    <p style="color: red;"><strong>❌ API Connection Failed!</strong></p>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

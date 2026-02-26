@@ -5,6 +5,7 @@ export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedImage, setSelectedImage] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false); // State to track if all images should be shown
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -23,17 +24,54 @@ export default function Gallery() {
       description: 'Capturing moments of change, compassion, and community impact.',
       images: [
         // Paste images here for "All Photos"
-        '/images/9.jpg', 
-        '/images/10.jpg', 
-        '/images/11.jpg', 
-        '/images/12.jpg',
-        '/images/13.jpg', 
-        '/images/14.jpg', 
-        '/images/15.jpg', 
-        '/images/13.jpg', 
-        '/images/14.jpg', 
-        '/images/15.jpg',
-        '/images/16.jpg'
+        '/images/microsoft/1.jpeg', 
+        '/images/microsoft/2.jpeg', 
+        '/images/microsoft/3.jpeg', 
+        '/images/microsoft/RJS 1.jpg',
+        '/images/microsoft/RJS 2.jpg', 
+        '/images/microsoft/RJS 3.jpg', 
+        '/images/microsoft/RJS 4.jpg', 
+        '/images/microsoft/RJS 5.jpg', 
+        '/images/microsoft/RJS6.jpg', 
+        '/images/microsoft/RV 1.jpg',
+        '/images/microsoft/RV 2.jpg',
+        '/images/microsoft/RV 3.jpg',
+        '/images/microsoft/RV 4.jpg',
+        '/images/microsoft/RV 5.jpg',
+        '/images/nasscom/BNP Visit - Offline .jpeg',
+        '/images/nasscom/BNP Visit(1).jpg',
+        '/images/nasscom/BNP Visit(2).jpg',
+        '/images/nasscom/BNP Visit(3).jpg',
+        '/images/nasscom/BNP Visit(4).jpg',
+        '/images/nasscom/BNP Visit(5).jpg',
+        '/images/nasscom/BNP Visit.jpg',
+        '/images/nasscom/BNP Volunteering Session (1).jpg',
+        '/images/nasscom/BNP Volunteering Session (2).jpg',
+        '/images/nasscom/BNP Volunteering Session (3).jpg',
+        '/images/nasscom/BNP Volunteering Session (4).jpg',
+        '/images/nasscom/BNP Volunteering Session (5).jpg',
+        '/images/nasscom/BNP Volunteering Session .jpg',
+        '/images/nasscom/Dive Photos.jpg',
+        '/images/nasscom/Manisha Mam Visit.jpg',
+        '/images/plan/Guest Lecture (1).jpeg',
+        '/images/plan/Guest Lecture (2).jpeg',
+        '/images/plan/Guest Lecture (3).jpeg',
+        '/images/plan/Hr Sessions (1).jpeg',
+        '/images/plan/Hr Sessions (2).jpeg',
+        '/images/plan/Hr Sessions (3).jpeg',
+        '/images/plan/Hr Sessions (4).jpeg',
+        '/images/plan/Hr Sessions (5).jpeg',
+        '/images/plan/HR Sessions from AMS Comptel HR - Faiza 2.jpeg',
+        '/images/plan/HR Sessions from AMS Comptel HR - Faiza 3.jpeg',
+        '/images/plan/HR Sessions from AMS Comptel HR - Faiza.jpeg',
+        '/images/plan/Industry visits (2).jpeg',
+        '/images/plan/Industry visits (4).jpeg',
+        '/images/plan/Industry visits (6).jpeg',
+        '/images/plan/industry1.jpg',
+        '/images/samarthanam/3.jpg',
+        '/images/samarthanam/5.jpg',
+        '/images/samarthanam/7.jpg'
+        
       ]
     },
     events: {
@@ -107,13 +145,14 @@ export default function Gallery() {
     setActiveCategory(category);
     setIsOpen(false);
     setSelectedImage(null);
+    setShowAll(false); // Reset showAll when changing categories
   };
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
       
       {/* 1. Hero Section */}
-      <section className="relative pt-24 pb-12 px-4 text-center overflow-hidden transition-all duration-500">
+      <section className="relative pt-24 pb-12 px-4 text-center overflow-visible transition-all duration-500">
         {/* Abstract Shapes */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-red-100 rounded-full blur-3xl opacity-50 translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-50 -translate-x-1/2 translate-y-1/2"></div>
@@ -132,6 +171,10 @@ export default function Gallery() {
       <section className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-8">
         <div className="flex flex-wrap justify-center gap-3">
           {Object.keys(galleryData).map((key) => {
+            // Hide events, csr, and teaching buttons for now
+            if (key === 'events' || key === 'csr' || key === 'teaching') {
+              return null; // Skip rendering these buttons
+            }
             const isActive = activeCategory === key;
             const category = galleryData[key];
             return (
@@ -154,7 +197,10 @@ export default function Gallery() {
       {/* 3. Image Grid */}
       <section className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-          {galleryData[activeCategory].images.map((src, index) => (
+          {(showAll 
+            ? galleryData[activeCategory].images 
+            : galleryData[activeCategory].images.slice(0, 12)
+          ).map((src, index) => (
             <div 
               key={index} 
               className="group relative overflow-hidden rounded-3xl shadow-lg cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
@@ -176,6 +222,18 @@ export default function Gallery() {
             </div>
           ))}
         </div>
+        
+        {/* Show More Button */}
+        {!showAll && galleryData[activeCategory].images.length > 12 && (
+          <div className="flex justify-center mt-12">
+            <button
+              onClick={() => setShowAll(true)}
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-orange-500 text-white font-bold rounded-full hover:from-blue-700 hover:to-orange-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              Show More
+            </button>
+          </div>
+        )}
       </section>
 
       {/* 4. Lightbox Modal */}
@@ -197,7 +255,7 @@ export default function Gallery() {
               <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+            <div className="bg-black rounded-2xl overflow-visible shadow-2xl border border-white/10">
               <img 
                 src={selectedImage} 
                 alt="Full size" 

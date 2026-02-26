@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ProgramCSRVolunteering() {
   const navigate = useNavigate();
-  const [showContactForm, setShowContactForm] = React.useState(false);
-  const [contactName, setContactName] = React.useState('');
-  const [contactEmail, setContactEmail] = React.useState('');
-  const [contactMessage, setContactMessage] = React.useState('');
-  const [mediaModalOpen, setMediaModalOpen] = React.useState(false);
-  const [mediaType, setMediaType] = React.useState('image');
-  const [mediaSrc, setMediaSrc] = React.useState('');
-  const [mediaAlt, setMediaAlt] = React.useState('');
-  const [mediaPoster, setMediaPoster] = React.useState('');
-  const mediaVideoRef = React.useRef(null);
+  
+  // --- State & Refs for Media Modal ---
+  const [mediaModalOpen, setMediaModalOpen] = useState(false);
+  const [mediaType, setMediaType] = useState('image');
+  const [mediaSrc, setMediaSrc] = useState('');
+  const [mediaAlt, setMediaAlt] = useState('');
+  const [mediaPoster, setMediaPoster] = useState('');
+  const mediaVideoRef = useRef(null);
 
-  React.useEffect(() => {
+  // --- State & Refs for New Slider ---
+  const wrapperRef = useRef(null);
+  const progressRef = useRef(null);
+  const [activeDotIndex, setActiveDotIndex] = useState(0);
+
+  // --- Media Modal Logic ---
+  useEffect(() => {
     function onKey(e) {
       if (e.key === 'Escape') {
         closeMediaModal();
@@ -25,17 +29,13 @@ export default function ProgramCSRVolunteering() {
   }, []);
 
   function openMediaModal(type, src, alt = '', poster = '') {
-    // Close existing first to ensure clean state
     closeMediaModal();
-    
-    // Small delay to allow close to process
     setTimeout(() => {
       setMediaType(type);
       setMediaSrc(src);
       setMediaAlt(alt);
       setMediaPoster(poster);
       setMediaModalOpen(true);
-      
       setTimeout(() => {
         try {
           document.querySelectorAll('video').forEach((v) => {
@@ -59,26 +59,66 @@ export default function ProgramCSRVolunteering() {
     try { document.body.style.overflow = ''; } catch (e) {}
   }
 
+  // --- New Slider Logic ---
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const progressBar = progressRef.current;
+    if (!wrapper || !progressBar) return;
+
+    function updateProgress() {
+      const scrollLeft = wrapper.scrollLeft;
+      const maxScrollLeft = wrapper.scrollWidth - wrapper.clientWidth;
+      const percentage = (scrollLeft / maxScrollLeft) * 100;
+      
+      if (progressBar) {
+        progressBar.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
+      }
+
+      // Update dots for mobile
+      if (window.innerWidth < 768) {
+        const cards = Array.from(wrapper.children);
+        const cardWidth = cards[0].offsetWidth + 24; // width + gap
+        const index = Math.round(scrollLeft / cardWidth);
+        setActiveDotIndex(index);
+      }
+    }
+
+    wrapper.addEventListener('scroll', updateProgress);
+    updateProgress(); // Initial call
+    window.addEventListener('resize', updateProgress);
+
+    return () => {
+      wrapper.removeEventListener('scroll', updateProgress);
+      window.removeEventListener('resize', updateProgress);
+    };
+  }, []);
+
+  const scrollLeft = () => {
+    if (wrapperRef.current) {
+      wrapperRef.current.scrollBy({ left: -350, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (wrapperRef.current) {
+      wrapperRef.current.scrollBy({ left: 350, behavior: 'smooth' });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
       
       {/* Hero Section */}
       <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center transform scale-105"
           style={{ backgroundImage: "url('/images/3.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
-        
-        {/* Main Content Container */}
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
-          
-          {/* Education For Everyone Pill */}
           <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-semibold tracking-wide uppercase animate-pulse">
             Education For Everyone
           </div>
-
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight drop-shadow-2xl">
             CSR <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">Volunteering</span>
           </h1>
@@ -88,40 +128,22 @@ export default function ProgramCSRVolunteering() {
         </div>
       </section>
 
-      {/* Media Modal - Fixed z-index and Back Button */}
+      {/* Media Modal */}
       {mediaModalOpen && (
         <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={closeMediaModal}>
           <div className="relative w-full max-w-6xl mx-auto" onClick={(e) => e.stopPropagation()}>
-            
-            {/* Back Button (Top Left) */}
-            <button
-              onClick={closeMediaModal}
-              className="absolute -top-16 left-0 text-white font-bold flex items-center gap-2 text-lg hover:text-gray-300 transition-colors z-10"
-            >
+            <button onClick={closeMediaModal} className="absolute -top-16 left-0 text-white font-bold flex items-center gap-2 text-lg hover:text-gray-300 transition-colors z-10">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
               Back
             </button>
-
-            {/* Close Button (Top Right) */}
-            <button
-              onClick={closeMediaModal}
-              className="absolute -top-16 right-0 text-white hover:text-gray-300 transition-transform hover:rotate-90 duration-300 z-10"
-            >
+            <button onClick={closeMediaModal} className="absolute -top-16 right-0 text-white hover:text-gray-300 transition-transform hover:rotate-90 duration-300 z-10">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
-
             <div className="bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10">
               {mediaType === 'image' ? (
                 <img src={mediaSrc} alt={mediaAlt} className="w-full h-[75vh] object-contain" />
               ) : (
-                <video
-                  ref={mediaVideoRef}
-                  src={mediaSrc}
-                  poster={mediaPoster}
-                  controls
-                  autoPlay
-                  className="w-full h-[75vh] object-contain"
-                />
+                <video ref={mediaVideoRef} src={mediaSrc} poster={mediaPoster} controls autoPlay className="w-full h-[75vh] object-contain" />
               )}
             </div>
           </div>
@@ -175,61 +197,114 @@ export default function ProgramCSRVolunteering() {
           </div>
         </div>
 
-        {/* Partnership Process - Styled Grid */}
-        <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Our Partnership Process</h3>
+        {/* --- NEW PARTNERSHIP PROCESS (HORIZONTAL SLIDER) --- */}
+        <section className="w-full">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-500">Partnership Process</span></h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto"></p>
           </div>
-          <div className="grid md:grid-cols-4 gap-6 text-center">
-            <div className="flex flex-col items-center space-y-2">
-              <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-bold mb-2">1</div>
-              <h4 className="font-bold text-slate-900">Consultation</h4>
-              <p className="text-sm text-slate-600">Understand your CSR goals</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-bold mb-2">2</div>
-              <h4 className="font-bold text-slate-900">Design</h4>
-              <p className="text-sm text-slate-600">Custom program design</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-bold mb-2">3</div>
-              <h4 className="font-bold text-slate-900">Execute</h4>
-              <p className="text-sm text-slate-600">Coordinate activities</p>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-bold mb-2">4</div>
-              <h4 className="font-bold text-slate-900">Report</h4>
-              <p className="text-sm text-slate-600">Track & report impact</p>
-            </div>
-          </div>
-        </div>
 
-        {/* Impact Stats - Title Inside Box */}
-        <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-red-600 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-          <div className="relative bg-gradient-to-br from-red-500 to-orange-600 rounded-[1.8rem] p-8 md:p-12 text-white shadow-2xl overflow-hidden">
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-10 blur-3xl"></div>
-            <div className="relative z-10">
-              <h3 className="text-3xl md:text-4xl font-bold mb-10 text-center tracking-tight">Our Impact</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
-                  <div className="text-5xl font-black mb-2 tracking-tight">100+</div>
-                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Corporate Partners</div>
+          <div className="relative">
+            {/* Progress Bar */}
+            <div className="h-1 w-full bg-slate-200 rounded-full mb-10 overflow-hidden">
+              <div ref={progressRef} className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 w-0 transition-all duration-300 ease-out"></div>
+            </div>
+
+            {/* Slider Window */}
+            <div className="relative group">
+              {/* Navigation Arrows */}
+              <button onClick={scrollLeft} className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 bg-white border border-slate-200 rounded-full shadow-xl items-center justify-center text-slate-600 hover:text-indigo-600 hover:scale-110 transition-all cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <button onClick={scrollRight} className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 bg-white border border-slate-200 rounded-full shadow-xl items-center justify-center text-slate-600 hover:text-indigo-600 hover:scale-110 transition-all cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              </button>
+
+              {/* Cards Wrapper */}
+              <div ref={wrapperRef} className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-2 overflow-visible">
+                {/* Card 1 */}
+                <div className="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[350px] lg:w-[400px]">
+                  <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 h-full relative overflow-hidden hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <svg className="w-24 h-24 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path></svg>
+                    </div>
+                    <div className="relative z-10">
+                      <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold mb-4">STEP 01</span>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-3">Consultation</h3>
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        We meet to understand your CSR vision, employee interests, and budget to define perfect scope for your organization.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
-                  <div className="text-5xl font-black mb-2 tracking-tight">5000+</div>
-                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Employees Engaged</div>
+
+                {/* Card 2 */}
+                <div className="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[350px] lg:w-[400px]">
+                  <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 h-full relative overflow-hidden hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <svg className="w-24 h-24 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                    </div>
+                    <div className="relative z-10">
+                      <span className="inline-block px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-bold mb-4">STEP 02</span>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-3">Design</h3>
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        We curate a bespoke program—selecting beneficiaries, activities, and locations that align with your brand values.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors">
-                  <div className="text-5xl font-black mb-2 tracking-tight">50000+</div>
-                  <div className="text-red-100 font-medium uppercase tracking-wider text-sm">Lives Impacted</div>
+
+                {/* Card 3 */}
+                <div className="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[350px] lg:w-[400px]">
+                  <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 h-full relative overflow-hidden hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <svg className="w-24 h-24 text-fuchsia-600" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div className="relative z-10">
+                      <span className="inline-block px-3 py-1 bg-fuchsia-50 text-fuchsia-700 rounded-full text-xs font-bold mb-4">STEP 03</span>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-3">Execute</h3>
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        We handle all on-ground logistics, safety protocols, and coordination to ensure a seamless experience for your team.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 4 */}
+                <div className="snap-center shrink-0 w-[85vw] sm:w-[400px] md:w-[350px] lg:w-[400px]">
+                  <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 h-full relative overflow-hidden hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                      <svg className="w-24 h-24 text-pink-600" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <div className="relative z-10">
+                      <span className="inline-block px-3 py-1 bg-pink-50 text-pink-700 rounded-full text-xs font-bold mb-4">STEP 04</span>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-3">Report</h3>
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        You receive a comprehensive impact report, including photos, volunteer hours, and feedback to share with stakeholders.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Program Types - Grid Layout */}
+            {/* Dots Indicator (Mobile) */}
+            <div className="flex justify-center gap-2 mt-8 md:hidden">
+              {[0, 1, 2, 3].map((i) => (
+                <div 
+                  key={i}
+                  className={`w-2 h-2 rounded-full transition-colors duration-300 ${activeDotIndex === i ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+        {/* --- END NEW DESIGN --- */}
+
+        {/* --- REPLACEMENT: Our Impact Section (Horizontal Split Dark Theme) --- */}
+        <ImpactStatsComponent />
+        
+        {/* Program Types */}
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-3xl border border-blue-200 shadow-lg hover:shadow-xl transition-all">
             <h3 className="text-2xl font-bold text-blue-900 mb-4">One-time Events</h3>
@@ -252,11 +327,7 @@ export default function ProgramCSRVolunteering() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
               <div className="relative overflow-hidden aspect-video cursor-pointer" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/3.jpg', 'CSR Activity 1'); }}>
-                <img 
-                  src="/images/3.jpg" 
-                  alt="Workshop" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
+                <img src="/images/3.jpg" alt="Workshop" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                   <div className="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
                     <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -277,11 +348,7 @@ export default function ProgramCSRVolunteering() {
 
             <div className="group bg-white rounded-3xl overflow-hidden shadow-lg border border-slate-100">
               <div className="relative overflow-hidden aspect-video cursor-pointer" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/4.jpg', 'CSR Activity 2'); }}>
-                <img 
-                  src="/images/4.jpg" 
-                  alt="Camp" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
+                <img src="/images/4.jpg" alt="Camp" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                   <div className="bg-white/90 backdrop-blur-md p-4 rounded-full shadow-xl transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-75">
                     <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5,12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -302,44 +369,17 @@ export default function ProgramCSRVolunteering() {
           </div>
         </div>
 
-        {/* How to Get Involved */}
-        <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-          <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-            <h3 className="text-3xl font-bold">How to Get Your Organization Involved</h3>
-            <p className="text-blue-100 text-lg">
-              We work with organizations of all sizes to create customized CSR programs that align with
-              your corporate values and social impact goals. Our team handles all coordination and logistics.
-            </p>
-            <button
-              onClick={() => setShowContactForm(true)}
-              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              Contact Us
-            </button>
-          </div>
-        </div>
-
-        {/* Corporate Success Stories - Text Only Styled Cards */}
+        {/* Corporate Success Stories */}
         <div className="space-y-8">
           <div className="text-center">
             <h3 className="text-3xl md:text-5xl font-bold text-slate-900 mt-2">Corporate Success Stories</h3>
           </div>
 
-          {/* Grid for Side by Side alignment */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            {/* Story Card 1 */}
             <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 overflow-hidden">
               <div className="flex flex-col md:flex-row gap-4">
-                
-                {/* Left Side: Media Stack */}
                 <div className="w-full md:w-1/2 flex flex-col gap-3">
-                  <div 
-                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
-                    onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'School Video 1', '/images/g1.jpg'); }}
-                  >
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md" onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'School Video 1', '/images/g1.jpg'); }}>
                     <img src="/images/g1.jpg" alt="Video" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                        <div className="bg-white/20 backdrop-blur-sm border border-white/30 p-2.5 rounded-full group-hover:bg-white/30 transition-colors">
@@ -348,46 +388,32 @@ export default function ProgramCSRVolunteering() {
                     </div>
                     <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-xs font-semibold">Watch Video</div>
                   </div>
-                  
-                  <div 
-                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
-                    onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/2.jpg', 'Story Image 1'); }}
-                  >
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/2.jpg', 'Story Image 1'); }}>
                     <img src="/images/2.jpg" alt="Story" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                        <span className="bg-white/90 backdrop-blur text-slate-900 font-bold px-3 py-1 rounded-full shadow-lg text-sm transform scale-90 group-hover:scale-100 transition-transform">View Photo</span>
                     </div>
                   </div>
                 </div>
-
-                {/* Right Side: Text */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
                   <div className="mb-3">
                     <div className="flex justify-center md:justify-start gap-1 mb-2 text-yellow-400 text-lg">★★★★★</div>
                     <h5 className="text-xl font-bold text-slate-900 mb-1">Volunteer</h5>
                     <p className="text-sm text-blue-600 font-medium mb-4">Community Participant</p>
                   </div>
-                  
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <p className="text-sm text-slate-700 italic leading-relaxed">
                       "Volunteering at local schools transformed my perspective on teaching and community."
                     </p>
                   </div>
                 </div>
-
               </div>
             </div>
 
-            {/* Story Card 2 */}
             <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 overflow-hidden">
               <div className="flex flex-col md:flex-row gap-4">
-                
-                {/* Left Side: Media Stack */}
                 <div className="w-full md:w-1/2 flex flex-col gap-3">
-                  <div 
-                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
-                    onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'School Video 2', '/images/g2.jpg'); }}
-                  >
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md" onClick={(e) => { e.stopPropagation(); openMediaModal('video', '/videos/nasscom.mp4', 'School Video 2', '/images/g2.jpg'); }}>
                     <img src="/images/g2.jpg" alt="Video" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                        <div className="bg-white/20 backdrop-blur-sm border border-white/30 p-2.5 rounded-full group-hover:bg-white/30 transition-colors">
@@ -396,87 +422,31 @@ export default function ProgramCSRVolunteering() {
                     </div>
                     <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-lg text-xs font-semibold">Watch Video</div>
                   </div>
-                  
-                  <div 
-                    className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md"
-                    onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/3.jpg', 'Story Image 2'); }}
-                  >
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden group cursor-pointer shadow-md" onClick={(e) => { e.stopPropagation(); openMediaModal('image', '/images/3.jpg', 'Story Image 2'); }}>
                     <img src="/images/3.jpg" alt="Story" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                        <span className="bg-white/90 backdrop-blur text-slate-900 font-bold px-3 py-1 rounded-full shadow-lg text-sm transform scale-90 group-hover:scale-100 transition-transform">View Photo</span>
                     </div>
                   </div>
                 </div>
-
-                {/* Right Side: Text */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
                   <div className="mb-3">
                     <div className="flex justify-center md:justify-start gap-1 mb-2 text-yellow-400 text-lg">★★★★★</div>
                     <h5 className="text-xl font-bold text-slate-900 mb-1">Volunteer</h5>
                     <p className="text-sm text-emerald-600 font-medium mb-4">Mentor</p>
                   </div>
-                  
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <p className="text-sm text-slate-700 italic leading-relaxed">
                       "The mentorship opportunities were rewarding and helped students improve significantly."
                     </p>
                   </div>
                 </div>
-
               </div>
             </div>
-
           </div>
         </div>
 
       </section>
-
-      {/* Contact Form Modal */}
-      {showContactForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowContactForm(false)} />
-          <div className="relative bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl transform transition-all animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setShowContactForm(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">Get Your Organization Involved</h3>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                console.log({ name: contactName, email: contactEmail, message: contactMessage });
-                setShowContactForm(false);
-                setContactName(''); setContactEmail(''); setContactMessage('');
-              }}
-            >
-              <input
-                value={contactName} onChange={(e) => setContactName(e.target.value)}
-                type="text" placeholder="Your Name" required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-              />
-              <input
-                value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
-                type="email" placeholder="Your Email" required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-              />
-              <textarea
-                value={contactMessage} onChange={(e) => setContactMessage(e.target.value)}
-                placeholder="Your Message" rows={4} required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all resize-none"
-              />
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg"
-              >
-                Send
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Call to Action */}
       <section className="w-full bg-slate-900 py-7 text-white relative overflow-hidden">
@@ -495,9 +465,9 @@ export default function ProgramCSRVolunteering() {
             </button>
             <button 
               className="px-8 py-4 bg-white text-slate-900 font-bold rounded-full hover:bg-gray-100 transition-all hover:scale-105 shadow-lg"
-              onClick={() => navigate('/learn-more')}
+              onClick={() => navigate('/donate')}
             >
-              Learn More
+              Make a Donation
             </button>
           </div>
         </div>
@@ -519,3 +489,115 @@ export default function ProgramCSRVolunteering() {
     </main>
   );
 }
+
+// --- Extracted Component for the New "Our Impact" Section ---
+const ImpactStatsComponent = () => {
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // --- Intersection Observer for Trigger ---
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Run only once
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) observer.unobserve(sectionRef.current);
+    };
+  }, []);
+
+  // --- Counter Logic ---
+  const Counter = ({ target }) => {
+    const [count, setCount] = useState(0);
+    
+    useEffect(() => {
+      if (isVisible) {
+        let start = 0;
+        const end = target;
+        const duration = 2000; // ms
+        const incrementTime = 20;
+        const steps = duration / incrementTime;
+        const increment = end / steps;
+
+        const timer = setInterval(() => {
+          start += increment;
+          if (start >= end) {
+            setCount(end);
+            clearInterval(timer);
+          } else {
+            setCount(Math.ceil(start));
+          }
+        }, incrementTime);
+
+        return () => clearInterval(timer);
+      }
+    }, [isVisible, target]);
+
+    return <span>{count.toLocaleString()}+</span>;
+  };
+
+  const statsData = [
+    { icon: '🏢', value: 100, label: 'Corporate Partners' },
+    { icon: '👥', value: 5000, label: 'Employees Engaged' },
+    { icon: '❤️', value: 50000, label: 'Lives Impacted' },
+  ];
+
+  return (
+    <div ref={sectionRef} className="bg-gradient-to-br from-white to-slate-50 py-12 px-4 rounded-[2rem] my-6 border border-slate-200 shadow-xl">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Section Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl text-slate-900 uppercase tracking-[0.2em] font-bold relative inline-block">
+            Our Impact
+            <span className="block w-20 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto mt-4" />
+          </h1>
+        </div>
+
+        {/* Stats List */}
+        <div className="flex flex-col md:flex-row justify-center items-stretch gap-8 md:gap-16">
+          {statsData.map((stat, index) => (
+            <div 
+              key={index} 
+              className={`
+                flex-1 flex flex-col items-center justify-center transition-all duration-1000 ease-out
+                ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+              `}
+            >
+              {/* Visual Side */}
+              <div className="w-full h-40 bg-gradient-to-br from-blue-50 to-orange-50 rounded-lg flex items-center justify-center relative overflow-hidden shadow-xl mb-8 border border-slate-200">
+                <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-orange-500 transition-all duration-1000 delay-500 ${isVisible ? 'w-full' : 'w-0'}`} />
+                <div className="text-5xl text-slate-700">
+                  {stat.icon}
+                </div>
+              </div>
+
+              {/* Text Side */}
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-none mb-2 font-variant-numeric">
+                  <Counter target={stat.value} />
+                </div>
+                <div className="text-slate-600 text-sm md:text-base uppercase tracking-widest font-semibold mb-4">
+                  {stat.label}
+                </div>
+                {/* Decorative Bar */}
+                <div className="w-10 h-1 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full mx-auto transition-all duration-1000 delay-700" style={{ width: isVisible ? '100%' : '0%' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+};

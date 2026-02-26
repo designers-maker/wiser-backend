@@ -28,19 +28,59 @@ export default function RequestForVolunteeringForm() {
     setSubmitStatus(null);
     setErrorMessage('');
 
+    // Validate form data
+    if (!formData.name.trim()) {
+      setErrorMessage('Name is required');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      setErrorMessage('Email is required');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setErrorMessage('Email is invalid');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.phone.trim()) {
+      setErrorMessage('Phone is required');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.company.trim()) {
+      setErrorMessage('Company is required');
+      setIsSubmitting(false);
+      return;
+    }
+
     console.log('📝 Request for Volunteering form - Submitting:', formData);
 
     try {
+      console.log('🚀 Sending request to:', `${API_BASE_URL}/api/forms/request_for_volunteering`);
+      
       const resp = await fetch(`${API_BASE_URL}/api/forms/request_for_volunteering`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          timestamp: new Date().toISOString()
+        })
       });
 
       let result;
       try {
         result = await resp.json();
       } catch (jsonError) {
+        console.error('❌ JSON parsing error:', jsonError);
         throw new Error('Server returned invalid response');
       }
 
@@ -48,20 +88,35 @@ export default function RequestForVolunteeringForm() {
 
       if (!resp.ok) {
         console.error('❌ Request for Volunteering form failed:', result);
-        const errorMsg = result.message || result.error || 'Request failed';
+        const errorMsg = result.message || result.error || `Request failed with status ${resp.status}`;
         setErrorMessage(errorMsg);
         throw new Error(errorMsg);
       }
 
       console.log('✅ Request for Volunteering form submitted successfully:', result);
       setSubmitStatus('success');
+      setErrorMessage(''); // Clear any previous error messages
       setTimeout(() => {
         navigate('/volunteer/request');
       }, 2000);
     } catch (error) {
       console.error('❌ Request for Volunteering form error:', error);
       setSubmitStatus('error');
-      setErrorMessage(error.message || 'Error submitting form');
+      
+      // Enhanced error handling with specific messages
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setErrorMessage('Unable to connect to server. Please check your internet connection and try again.');
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        setErrorMessage('Network connection failed. Please check your internet connection.');
+      } else if (error.message.includes('invalid response') || error.message.includes('JSON')) {
+        setErrorMessage('Server error. Please try again in a few minutes.');
+      } else if (error.message.includes('404')) {
+        setErrorMessage('Form submission endpoint not found. Please contact support.');
+      } else if (error.message.includes('500')) {
+        setErrorMessage('Server internal error. Please try again later.');
+      } else {
+        setErrorMessage(error.message || 'Error submitting form. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -189,7 +244,7 @@ export default function RequestForVolunteeringForm() {
         
         <button
           type="button"
-          onClick={() => window.location.href = 'tel:+919876543210'}
+          onClick={() => window.location.href = 'tel:+919916847774'}
           className="w-48 mx-auto bg-gray-700 text-white px-6 py-3 font-semibold rounded-lg hover:bg-gray-800 transition-colors mt-3"
         >
           Contact Us

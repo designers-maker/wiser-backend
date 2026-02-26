@@ -8,7 +8,7 @@ export default function Volunteer() {
     <main className="min-h-screen bg-slate-50 font-sans selection:bg-red-500 selection:text-white">
       
       {/* 1. Header Section - NO IMAGE, Clean Typography */}
-      <section className="relative pt-20 pb-16 px-4 text-center overflow-hidden">
+      <section className="relative pt-20 pb-16 px-4 text-center overflow-visible">
         
         {/* Background Decoration (Abstract Shapes) */}
         <div className="absolute top-0 left-0 w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>

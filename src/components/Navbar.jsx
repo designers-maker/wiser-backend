@@ -7,7 +7,17 @@ export default function Navbar() {
   const [isVolunteerOpen, setIsVolunteerOpen] = useState(false);
   const [isVolunteerMobileOpen, setIsVolunteerMobileOpen] = useState(false);
   const [isAboutMobileOpen, setIsAboutMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -31,18 +41,22 @@ export default function Navbar() {
   }, [location.pathname]);
 
   // Class for the animated gradient button effect
-  const navLinkClasses = "px-5 py-2 rounded-full transition-all duration-300 ease-out font-semibold text-blue-800 tracking-wide hover:text-white hover:shadow-lg hover:scale-105 bg-transparent hover:bg-gradient-to-r hover:from-blue-700 hover:to-orange-500";
+  const navLinkClasses = "px-4 py-1.5 rounded-full transition-all duration-300 ease-out font-semibold text-blue-800 tracking-wide hover:text-white hover:shadow-lg hover:scale-105 bg-transparent hover:bg-gradient-to-r hover:from-blue-700 hover:to-orange-500 relative overflow-hidden group";
 
   return (
-    <header className="border-b border-blue-800 fixed top-0 left-0 right-0 bg-white z-50 w-full shadow-sm h-14 sm:h-16 md:h-[72px]">
-      <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-4 sm:px-6 md:px-8">
+    <header className={`border-b border-blue-800 fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+      scrolled 
+        ? 'bg-white/90 backdrop-blur-md shadow-lg h-14 sm:h-16' 
+        : 'bg-white shadow-sm h-12 sm:h-14 md:h-16'
+    }`}>
+      <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-3 sm:px-4 md:px-6">
         {/* Left logo */}
         <div className="flex items-center">
           <NavLink to="/" onClick={() => setIsMenuOpen(false)}>
             <img
               src="/WISER Logo.png"
               alt="Logo"
-              className="h-8 md:h-10 w-auto"
+              className="h-8 md:h-10 w-auto mt-1"
             />
           </NavLink>
         </div>
@@ -118,8 +132,15 @@ export default function Navbar() {
             GALLERY
           </NavLink>
 
-          <NavLink to="/donate" className={navLinkClasses}>
-            DONATE
+          <NavLink 
+            to="/donate" 
+            className="px-5 py-2 rounded-full transition-all duration-500 ease-out font-bold text-white tracking-wide hover:scale-105 hover:shadow-2xl transform bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 border-2 border-transparent hover:border-white/30 relative overflow-hidden"
+          >
+            <span className="absolute inset-0 w-full h-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300 ease-out animate-pulse"></span>
+            <span className="relative z-10 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+              DONATE
+            </span>
           </NavLink>
 
           <NavLink to="/contact" className={navLinkClasses}>
@@ -175,18 +196,6 @@ export default function Navbar() {
               HOME
             </NavLink>
 
-            <NavLink 
-              to="/volunteer" 
-              onClick={() => setIsMenuOpen(false)}
-              className={({ isActive }) => `px-4 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-300 ${
-                isActive 
-                  ? 'text-white bg-gradient-to-r from-blue-700 to-orange-500' 
-                  : 'text-gray-800 hover:text-white hover:bg-gradient-to-r hover:from-blue-700 hover:to-orange-500'
-              }`}
-            >
-              VOLUNTEER
-            </NavLink>
-
             {/* Mobile Volunteer Accordion */}
             <div>
               <button
@@ -194,7 +203,7 @@ export default function Navbar() {
                 className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-semibold tracking-wide text-gray-800 hover:text-white hover:bg-gradient-to-r hover:from-blue-700 hover:to-orange-500 transition-all duration-300"
                 aria-expanded={isVolunteerMobileOpen}
               >
-                <span>VOLUNTEER OPTIONS</span>
+                <span>VOLUNTEER</span>
                 <svg
                   className={`w-4 h-4 transform transition-transform duration-200 ${isVolunteerMobileOpen ? 'rotate-180' : 'rotate-0'}`}
                   viewBox="0 0 20 20"
@@ -205,6 +214,7 @@ export default function Navbar() {
                 </svg>
               </button>
               <div className={`mt-2 ml-4 border-l-2 border-blue-200 pl-4 space-y-1 ${isVolunteerMobileOpen ? 'block' : 'hidden'}`}>
+                <NavLink to="/volunteer" onClick={() => { setIsMenuOpen(false); setIsVolunteerMobileOpen(false); }} className="block text-sm py-2 text-gray-600 hover:text-blue-700 transition-colors">Volunteer Overview</NavLink>
                 <NavLink to="/volunteer/corporate" onClick={() => { setIsMenuOpen(false); setIsVolunteerMobileOpen(false); }} className="block text-sm py-2 text-gray-600 hover:text-blue-700 transition-colors">Corporate Volunteering</NavLink>
                 <NavLink to="/volunteer/individual" onClick={() => { setIsMenuOpen(false); setIsVolunteerMobileOpen(false); }} className="block text-sm py-2 text-gray-600 hover:text-blue-700 transition-colors">Individual Volunteering</NavLink>
                 <NavLink to="/volunteer/request" onClick={() => { setIsMenuOpen(false); setIsVolunteerMobileOpen(false); }} className="block text-sm py-2 text-gray-600 hover:text-blue-700 transition-colors">Request for Volunteering</NavLink>
@@ -266,13 +276,14 @@ export default function Navbar() {
             <NavLink
               to="/donate"
               onClick={() => setIsMenuOpen(false)}
-              className={({ isActive }) => `px-4 py-3 rounded-lg text-sm font-semibold tracking-wide transition-all duration-300 ${
+              className={({ isActive }) => `px-4 py-3 rounded-full text-sm font-bold tracking-wide transition-all duration-300 flex items-center gap-2 ${
                 isActive 
-                  ? 'text-white bg-gradient-to-r from-blue-700 to-orange-500' 
-                  : 'text-gray-800 hover:text-white hover:bg-gradient-to-r hover:from-blue-700 hover:to-orange-500'
+                  ? 'text-white bg-gradient-to-r from-red-600 to-orange-500 shadow-lg' 
+                  : 'text-red-600 bg-red-50 hover:text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:scale-105'
               }`}
             >
-              DONATE
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+              <span>DONATE</span>
             </NavLink>
 
             <NavLink
