@@ -3,6 +3,9 @@
   publish = "dist"
   environment = { NODE_VERSION = "18" }
 
+[template.environment]
+  VITE_API_URL = "https://wiser-backend-66lo.onrender.com"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/webhook"
