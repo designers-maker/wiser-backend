@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  environment = { NODE_VERSION = "18" }
+
+[template.environment]
+  VITE_API_URL = "https://wiser-backend-66lo.onrender.com"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/webhook"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        .test-result { margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #cce7ff; border: 1px solid #b8daff; color: #004085; }
+        button { padding: 12px 24px; margin: 10px 5px; background: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0051cc; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WISER Form Debug Test</h1>
+        <p>Testing: <strong>https://wiserwebsite.netlify.app/</strong></p>
+        
+        <div class="test-result info">
+            <h3>Configuration Check</h3>
+            <p><strong>VITE_API_URL:</strong> <span id="api-url">Checking...</span></p>
+            <p><strong>Current Domain:</strong> <span id="current-domain"></span></p>
+        </div>
+        
+        <div>
+            <button onclick="testConnection()">Test Backend Connection</button>
+            <button onclick="testFormSubmission()">Test Form Submission</button>
+            <button onclick="showAllTests()">Run All Tests</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Display configuration
+        document.getElementById('current-domain').textContent = window.location.hostname;
+        document.getElementById('api-url').textContent = import.meta.env?.VITE_API_URL || 'NOT SET';
+        
+        function addResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        async function testConnection() {
+            const apiUrl = import.meta.env?.VITE_API_URL || 'https://wiser-backend-66lo.onrender.com';
+            const testUrl = `${apiUrl}/api/health`;
+            
+            addResult(`<strong>Testing Connection to:</strong><br>${testUrl}`, 'info');
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                
+                const response = await fetch(testUrl, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`<strong>✅ SUCCESS!</strong><br>Status: ${response.status}<br>Response: <pre>${JSON.stringify(data, null, 2)}</pre>`, 'success');
+                } else {
+                    addResult(`<strong>❌ FAILED</strong><br>Status: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    addResult(`<strong>❌ TIMEOUT</strong><br>The request timed out after 10 seconds.<br>This usually means network issues or firewall blocking.`, 'error');
+                } else {
+                    addResult(`<strong>❌ ERROR</strong><br>Message: ${error.message}<br>Details: ${error.name}`, 'error');
+                }
+            }
+        }
+        
+        async function testFormSubmission() {
+            const apiUrl = import.meta.env?.VITE_API_URL || 'https://wiser-backend-66lo.onrender.com';
+            const testUrl = `${apiUrl}/api/forms/individual_volunteering`;
+            
+            addResult(`<strong>Testing Form Submission to:</strong><br>${testUrl}`, 'info');
+            
+            const testData = {
+                name: 'Debug Test User',
+                email: 'debug@wiserwebsite.netlify.app',
+                phone: '1234567890',
+                company: 'Debug Test',
+                message: 'Debug test from ' + window.location.hostname,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+                
+                const response = await fetch(testUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testData),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`<strong>✅ FORM SUBMISSION SUCCESS!</strong><br>Response: <pre>${JSON.stringify(data, null, 2)}</pre>`, 'success');
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    addResult(`<strong>❌ FORM SUBMISSION FAILED</strong><br>Status: ${response.status}<br>Error: <pre>${JSON.stringify(errorData, null, 2)}</pre>`, 'error');
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    addResult(`<strong>❌ FORM TIMEOUT</strong><br>The form submission timed out.<br>Check if VITE_API_URL is set correctly.`, 'error');
+                } else {
+                    addResult(`<strong>❌ FORM ERROR</strong><br>Message: ${error.message}<br>This means your VITE_API_URL environment variable is not set or incorrect.`, 'error');
+                }
+            }
+        }
+        
+        async function showAllTests() {
+            document.getElementById('results').innerHTML = '';
+            await testConnection();
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await testFormSubmission();
+        }
+        
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            setTimeout(showAllTests, 1000);
+        });
+    </script>
+</body>
+</html>

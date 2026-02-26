@@ -45,7 +45,6 @@ const connectDB = async () => {
     console.error(
       "🔧 Please check Firebase configuration and network connectivity",
     );
-    console.error("💡 Make sure your service account credentials are correct");
   }
 };
 
@@ -189,6 +188,8 @@ app.post("/api/forms/volunteer", async (req, res) => {
 
 app.post("/api/forms/individual_volunteering", async (req, res) => {
   console.log("\n📝 Individual Volunteering form submission received");
+  console.log("Request headers:", req.headers);
+  console.log("Request origin:", req.headers.origin);
   console.log("Data:", req.body);
   try {
     const result = await firebaseDB.individualVolunteering.create(req.body);

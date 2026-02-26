@@ -1,0 +1,254 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
+
+export default function CorporateVolunteerForm() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setErrorMessage('');
+
+    // Validate form data
+    if (!formData.name.trim()) {
+      setErrorMessage('Name is required');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.email.trim()) {
+      setErrorMessage('Email is required');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setErrorMessage('Email is invalid');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.phone.trim()) {
+      setErrorMessage('Phone is required');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    if (!formData.company.trim()) {
+      setErrorMessage('Company is required');
+      setIsSubmitting(false);
+      return;
+    }
+
+    console.log('📝 Corporate Volunteer form - Submitting:', formData);
+
+    try {
+      console.log('🚀 Sending request to:', `${API_BASE_URL}/api/forms/corporate_volunteering`);
+      
+      const resp = await fetch(`${API_BASE_URL}/api/forms/corporate_volunteering`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          ...formData,
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      let result;
+      try {
+        result = await resp.json();
+      } catch (jsonError) {
+        console.error('❌ JSON parsing error:', jsonError);
+        throw new Error('Server returned invalid response');
+      }
+      
+      console.log('Response:', result);
+      
+      if (!resp.ok) {
+        console.error('❌ Corporate Volunteer form failed:', result);
+        const errorMsg = result.message || result.error || `Request failed with status ${resp.status}`;
+        setErrorMessage(errorMsg);
+        throw new Error(errorMsg);
+      }
+      
+      console.log('✅ Corporate Volunteer form submitted successfully:', result);
+      setSubmitStatus('success');
+      setErrorMessage(''); // Clear any previous error messages
+      setTimeout(() => {
+        navigate('/volunteer/corporate');
+      }, 2000);
+    } catch (error) {
+      console.error('❌ Corporate Volunteer form error:', error);
+      setSubmitStatus('error');
+      
+      // Enhanced error handling with specific messages
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setErrorMessage('Unable to connect to server. Please check your internet connection and try again.');
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        setErrorMessage('Network connection failed. Please check your internet connection.');
+      } else if (error.message.includes('invalid response') || error.message.includes('JSON')) {
+        setErrorMessage('Server error. Please try again in a few minutes.');
+      } else if (error.message.includes('404')) {
+        setErrorMessage('Form submission endpoint not found. Please contact support.');
+      } else if (error.message.includes('500')) {
+        setErrorMessage('Server internal error. Please try again later.');
+      } else {
+        setErrorMessage(error.message || 'Error submitting form. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <main className="container py-8 sm:py-12 px-4 max-w-2xl mx-auto">
+      <button
+        onClick={() => navigate('/volunteer/corporate')}
+        className="flex items-center gap-2 text-red-700 hover:text-red-800 font-semibold mb-6 transition-colors"
+      >
+        <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        Back to Corporate Volunteering
+      </button>
+
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-red-800">
+        Corporate Volunteering Form
+      </h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+            Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent"
+            placeholder="Enter your full name"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+            Corporate Email *
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent"
+            placeholder="Enter your corporate email address"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+            Contact Number *
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            required
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent"
+            placeholder="Enter your contact number"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="company" className="block text-sm font-semibold text-gray-700 mb-2">
+            Company/Organization *
+          </label>
+          <input
+            type="text"
+            id="company"
+            name="company"
+            required
+            value={formData.company}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent"
+            placeholder="Enter your company or organization name"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+            Message
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            value={formData.message}
+            onChange={handleChange}
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent resize-none"
+            placeholder="Tell us about volunteering initiatives you have in mind which we can support..."
+          ></textarea>
+        </div>
+
+        {submitStatus === 'success' && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+            <p className="font-semibold">Submitted Successfully! Redirecting...</p>
+          </div>
+        )}
+
+        {submitStatus === 'error' && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+            <p className="font-semibold">Error submitting form. Please try again.</p>
+            {errorMessage && (
+              <p className="text-red-600 text-sm mt-1">{errorMessage}</p>
+            )}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-red-700 text-white px-6 py-3 font-semibold rounded-lg hover:bg-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? 'Sending...' : 'Submit Your Interest'}
+        </button>
+        
+        <button
+          type="button"
+          onClick={() => window.location.href = 'tel:+919916847774'}
+          className="w-48 mx-auto bg-gray-700 text-white px-6 py-3 font-semibold rounded-lg hover:bg-gray-800 transition-colors mt-3"
+        >
+          Contact Us
+        </button>
+      </form>
+    </main>
+  );
+}
