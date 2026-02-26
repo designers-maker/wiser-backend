@@ -46,6 +46,12 @@ const getApiUrl = () => {
 
 export const API_BASE_URL = getApiUrl();
 
+// Default export for backward compatibility
+export default {
+  API_BASE_URL,
+  PROXY_CONFIG
+};
+
 // For proxy in development
 export const PROXY_CONFIG = {
   '/api': {
